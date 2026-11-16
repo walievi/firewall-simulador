@@ -51,7 +51,7 @@ select,input[type=text]{padding:6px 7px;border:1px solid var(--line);border-radi
 .btn.sm{padding:2px 7px;font-size:13px}
 .apply{display:none;background:var(--warnbg);border:1px solid #e6c766;border-radius:10px;padding:10px 14px;margin-bottom:14px;align-items:center;gap:12px;flex-wrap:wrap}
 .apply.show{display:flex}
-.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;align-items:end}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;align-items:end}
 .form label{font-size:12px;color:var(--muted);display:block;margin-bottom:2px}
 .form select,.form input{width:100%}
 .log{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
@@ -175,7 +175,7 @@ textarea{width:100%;min-height:300px;font-family:ui-monospace,Menlo,Consolas,mon
         <button class="btn" id="btnPause">⏸ Pausar</button>
         <label class="switch"><input type="checkbox" id="onlyBlocked"> só bloqueados</label>
         <label class="switch"><input type="checkbox" id="onlyAtk"> só ataques</label>
-        <input type="text" id="ipFilter" placeholder="filtrar por IP ou porta" style="width:190px">
+        <input type="text" id="ipFilter" placeholder="filtrar por IP ou porta (ex. 22)" style="width:190px">
         <select id="speed"><option value="1">velocidade normal</option><option value="2">rápido</option><option value="0.5">devagar</option></select>
       </div>
       <div class="logwrap"><table class="log"><thead><tr><th>Hora</th><th>Ação</th><th>Origem</th><th>Destino</th><th>Porta</th><th>Regra</th><th>O que é</th></tr></thead><tbody id="logBody"></tbody></table></div>
@@ -579,7 +579,7 @@ function renderCards(){
 }
 function renderLog(){
   const ob=$("onlyBlocked").checked, oa=$("onlyAtk").checked, f=$("ipFilter").value.trim();
-  $("logBody").innerHTML = logs.filter(l=>(!ob||l.action==="block")&&(!oa||l.atk)&&(!f||l.sip.includes(f)||l.dip.includes(f)||String(l.port)===f)).slice(0,160).map(l=>
+  $("logBody").innerHTML = logs.filter(l=>(!ob||l.action==="block")&&(!oa||l.atk)&&(!f||(/^\d+$/.test(f)?String(l.port)===f:(l.sip.includes(f)||l.dip.includes(f))))).slice(0,160).map(l=>
     `<tr class="${l.atk?"atk":""}"><td>${l.t}</td><td><span class="pill ${l.by==="IPS"?"ips":l.action}">${l.by==="IPS"?"IPS":(l.action==="pass"?"PASSOU":"BLOQUEADO")}</span></td><td>${l.sip}</td><td>${l.dip}</td><td>${l.port}</td><td>${l.by}</td><td class="desc">${l.atk?"⚠️ ":""}${esc(l.desc)}</td></tr>`).join("");
 }
 function renderIds(){
@@ -679,9 +679,9 @@ $("btnCopy").onclick=async()=>{ const t=report(); $("report").value=t; try{ awai
 
 // verificador
 $("btnVer").onclick=()=>{
-  const mm=$("verIn").value.match(/VERIFICA[ÇC][ÃA]O\s+([A-Za-z0-9+/=]+)\.([a-z0-9]+)/);
+  const raw=$("verIn").value, pos=raw.search(/VERIFICA[ÇC][ÃA]O/); const mm=pos<0?null:raw.slice(pos).replace(/^VERIFICA[ÇC][ÃA]O/,"").replace(/\s+/g,"").match(/^()([A-Za-z0-9+/=]+)\.([a-z0-9]+)/);
   if(!mm){ $("verOut").innerHTML='<p class="pill block">Linha de verificação não encontrada.</p>'; return; }
-  const ok=h53(SALT+mm[1]).toString(36)===mm[2];
+  mm.shift(); const ok=h53(SALT+mm[1]).toString(36)===mm[2];
   let p; try{ p=JSON.parse(decodeURIComponent(escape(atob(mm[1])))); }catch(e){ $("verOut").innerHTML='<p class="pill block">Código corrompido.</p>'; return; }
   const list=MISSIONS.map((x,i)=>`<li>${p.m&(1<<i)?"✅":"⬜"} ${esc(x.t)}</li>`).join("");
   const mins=Math.round((p.t1-p.t0)/60000);
