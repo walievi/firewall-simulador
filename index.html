@@ -239,18 +239,23 @@ textarea{width:100%;min-height:300px;font-family:ui-monospace,Menlo,Consolas,mon
 
   <section id="tab-relatorio" class="hide">
     <div class="panel">
-      <h2>Relatório para entregar</h2>
-      <p>Quando terminar, copie este relatório e cole no fim do seu documento. Ele mostra as suas regras, as missões, a linha do tempo do que você fez e um código de verificação que o professor confere.</p>
-      <button class="btn primary" id="btnCopy">Copiar relatório</button> <span id="copyOk" class="muted"></span>
+      <h2>Arquivo de entrega</h2>
+      <p>Quando terminar, clique em <b>Baixar arquivo de entrega</b>. O navegador salva um arquivo com a extensão <code>.fwm</code> (Firewall do Mercado), normalmente na pasta <b>Downloads</b>. Esse arquivo vai anexado na tarefa do Classroom, junto do seu documento. Ele guarda as suas regras, as missões, a linha do tempo do que você fez e um código de verificação que o professor confere.</p>
+      <p class="muted">Não abra nem edite o arquivo. Qualquer mudança nele aparece para o professor como arquivo adulterado. Se continuar mexendo no simulador depois de baixar, baixe de novo e entregue o mais novo.</p>
+      <button class="btn primary" id="btnDownload">⬇ Baixar arquivo de entrega (.fwm)</button> <span id="dlOk" class="muted"></span>
+      <h3>Conteúdo do arquivo</h3>
       <br><br><textarea id="report" readonly></textarea>
     </div>
   </section>
 
   <section id="tab-verificar" class="hide">
     <div class="panel">
-      <h2>Verificar relatório (professor)</h2>
-      <p class="muted">Cole o relatório inteiro do aluno, ou só a linha que começa com VERIFICAÇÃO.</p>
-      <textarea id="verIn" style="min-height:160px"></textarea><br><br>
+      <h2>Verificar entregas (professor)</h2>
+      <p>Selecione os arquivos <code>.fwm</code> dos alunos. Pode escolher todos de uma vez (baixe a pasta da tarefa no Drive e selecione os arquivos).</p>
+      <input type="file" id="verFiles" multiple accept=".fwm,.txt">
+      <div id="verTable"></div>
+      <h3>Ou cole o conteúdo de um arquivo</h3>
+      <textarea id="verIn" style="min-height:120px"></textarea><br><br>
       <button class="btn primary" id="btnVer">Verificar</button>
       <div id="verOut"></div>
     </div>
@@ -675,14 +680,42 @@ function report(){
   L.push(verifLine());
   return L.join("\n");
 }
-$("btnCopy").onclick=async()=>{ const t=report(); $("report").value=t; try{ await navigator.clipboard.writeText(t); $("copyOk").textContent="Copiado. Agora cole no fim do seu documento."; }catch(e){ $("report").select(); $("copyOk").textContent="Selecionei o texto, use Ctrl+C."; } };
+const slug = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"").toLowerCase();
+$("btnDownload").onclick=()=>{
+  mark("Baixou o arquivo de entrega"); save();
+  const t=report(); $("report").value=t;
+  const name=`firewall-${slug(ID.mat)}-${slug(ID.nome)}.fwm`;
+  const blob=new Blob([t.replace(/\n/g,"\r\n")],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1000);
+  $("dlOk").textContent=`Arquivo ${name} baixado às ${new Date().toLocaleTimeString("pt-BR")}. Anexe na tarefa do Classroom.`;
+};
 
 // verificador
+function parseVer(raw){
+  const pos=raw.search(/VERIFICA[ÇC][ÃA]O/); const mm=pos<0?null:raw.slice(pos).replace(/^VERIFICA[ÇC][ÃA]O/,"").replace(/\s+/g,"").match(/^([A-Za-z0-9+/=]+)\.([a-z0-9]+)/);
+  if(!mm) return {err:"sem linha de verificação"};
+  const ok=h53(SALT+mm[1]).toString(36)===mm[2];
+  try{ return {ok, p:JSON.parse(decodeURIComponent(escape(atob(mm[1]))))}; }catch(e){ return {err:"código corrompido"}; }
+}
+$("verFiles").onchange=async e=>{
+  const files=[...e.target.files]; const rows=[];
+  for(const f of files){ const r=parseVer(await f.text()); r.file=f.name; rows.push(r); }
+  const count={}; rows.forEach(r=>{ if(r.p) count[r.p.r]=(count[r.p.r]||0)+1; });
+  rows.sort((a,b)=>((a.p&&a.p.n)||"").localeCompare((b.p&&b.p.n)||""));
+  $("verTable").innerHTML=`<p>${rows.length} arquivo(s).</p><div class="logwrap"><table><thead><tr><th>Arquivo</th><th>Código</th><th>Nome</th><th>Matrícula</th><th>Missões</th><th>Início</th><th>Minutos</th><th>Aplicou</th><th>Avisos</th></tr></thead><tbody>`+
+   rows.map(r=>{ if(!r.p) return `<tr><td>${esc(r.file)}</td><td><span class="pill block">${esc(r.err)}</span></td><td colspan="7"></td></tr>`;
+     const p=r.p, n=MISSIONS.filter((x,i)=>p.m&(1<<i)).length, mins=Math.round((p.t1-p.t0)/60000), av=[];
+     if(count[p.r]>1) av.push("matrícula repetida em outro arquivo");
+     if(!r.file.toLowerCase().includes(slug(p.r))) av.push("nome do arquivo não bate com a matrícula do código");
+     if(mins<15) av.push("feito em menos de 15 min");
+     if(p.a<3) av.push("aplicou regras poucas vezes");
+     return `<tr><td class="log">${esc(r.file)}</td><td>${r.ok?'<span class="pill pass">válido</span>':'<span class="pill block">ADULTERADO</span>'}</td><td>${esc(p.n)}</td><td>${esc(p.r)}</td><td>${n}/${MISSIONS.length}</td><td>${fmt(p.t0)}</td><td>${mins}</td><td>${p.a}</td><td>${av.map(esc).join("; ")}</td></tr>`; }).join("")+`</tbody></table></div>`;
+};
 $("btnVer").onclick=()=>{
-  const raw=$("verIn").value, pos=raw.search(/VERIFICA[ÇC][ÃA]O/); const mm=pos<0?null:raw.slice(pos).replace(/^VERIFICA[ÇC][ÃA]O/,"").replace(/\s+/g,"").match(/^()([A-Za-z0-9+/=]+)\.([a-z0-9]+)/);
-  if(!mm){ $("verOut").innerHTML='<p class="pill block">Linha de verificação não encontrada.</p>'; return; }
-  mm.shift(); const ok=h53(SALT+mm[1]).toString(36)===mm[2];
-  let p; try{ p=JSON.parse(decodeURIComponent(escape(atob(mm[1])))); }catch(e){ $("verOut").innerHTML='<p class="pill block">Código corrompido.</p>'; return; }
+  const r=parseVer($("verIn").value);
+  if(r.err){ $("verOut").innerHTML=`<p class="pill block">${esc(r.err)}</p>`; return; }
+  const ok=r.ok, p=r.p;
   const list=MISSIONS.map((x,i)=>`<li>${p.m&(1<<i)?"✅":"⬜"} ${esc(x.t)}</li>`).join("");
   const mins=Math.round((p.t1-p.t0)/60000);
   $("verOut").innerHTML=`<h3>${ok?'<span class="pill pass">CÓDIGO VÁLIDO</span>':'<span class="pill block">CÓDIGO ADULTERADO</span>'}</h3>
