@@ -16,9 +16,9 @@ body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-ap
 header{background:var(--top);color:#fff;display:flex;align-items:center;gap:16px;padding:10px 18px;flex-wrap:wrap}
 header .logo{font-weight:800;font-size:18px;letter-spacing:.3px}
 header .logo span{color:#ff9a4a}
-header .sub{color:#b9c5d3;font-size:13px}
 header .sp{flex:1}
-header input{padding:6px 8px;border-radius:6px;border:1px solid #44566c;background:#16202b;color:#fff;width:260px}
+header .who{background:#16202b;border:1px solid #44566c;border-radius:8px;padding:5px 12px;font-size:14px}
+header .who b{color:#ffd27a}
 header button{background:#3a4d63;color:#fff;border:0;border-radius:6px;padding:7px 12px;cursor:pointer}
 header button:hover{background:#4b6280}
 nav{background:var(--top2);display:flex;gap:2px;padding:0 12px;flex-wrap:wrap}
@@ -49,9 +49,9 @@ select,input[type=text]{padding:6px 7px;border:1px solid var(--line);border-radi
 .btn.primary:hover{background:#094c8f}
 .btn.danger{color:var(--bad)}
 .btn.sm{padding:2px 7px;font-size:13px}
-.apply{display:none;background:var(--warnbg);border:1px solid #e6c766;border-radius:10px;padding:10px 14px;margin-bottom:14px;align-items:center;gap:12px}
+.apply{display:none;background:var(--warnbg);border:1px solid #e6c766;border-radius:10px;padding:10px 14px;margin-bottom:14px;align-items:center;gap:12px;flex-wrap:wrap}
 .apply.show{display:flex}
-.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;align-items:end}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;align-items:end}
 .form label{font-size:12px;color:var(--muted);display:block;margin-bottom:2px}
 .form select,.form input{width:100%}
 .log{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
@@ -68,36 +68,55 @@ select,input[type=text]{padding:6px 7px;border:1px solid var(--line);border-radi
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:900px){.grid2{grid-template-columns:1fr}}
 .map{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:stretch}
+@media(max-width:900px){.map{grid-template-columns:1fr}}
 .zone{border:2px solid var(--line);border-radius:12px;padding:10px;background:#fbfcfd}
 .zone h4{margin:0 0 4px}
-.zone .ip{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--muted)}
+.ip{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:#36414d}
 .zone ul{margin:6px 0 0;padding-left:18px}
 .fwbox{border:3px solid var(--accent);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff6ef;padding:12px;text-align:center}
 .fwbox .big{font-size:34px}
 .switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
 .switch input{width:18px;height:18px}
 .hint{background:var(--bluebg);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13.5px}
-.hide{display:none}
+.hide{display:none!important}
 code{background:#f1f3f6;padding:1px 5px;border-radius:4px}
-textarea{width:100%;min-height:260px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:10px}
+textarea{width:100%;min-height:300px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:10px}
 .score{font-size:28px;font-weight:800}
+#login{position:fixed;inset:0;background:rgba(20,28,38,.92);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+#login .box{background:#fff;border-radius:14px;max-width:520px;width:100%;padding:24px}
+#login h1{margin:0 0 6px;font-size:22px}
+#login label{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
+#login input{width:100%;padding:10px;font-size:16px}
+#login .err{color:var(--bad);min-height:20px;margin-top:8px}
+.kv td:first-child{color:var(--muted);width:45%}
 </style>
 </head>
 <body>
+<div id="login">
+  <div class="box">
+    <h1>🛡️ Firewall do Mercado Bom Preço</h1>
+    <p class="muted">Cada aluno recebe uma rede diferente, com endereços próprios gerados a partir da matrícula. Digite os seus dados com cuidado. Eles aparecem no alto da tela e no relatório que você vai entregar.</p>
+    <label for="inNome">Nome completo</label><input id="inNome" type="text" autocomplete="off">
+    <label for="inMat">Matrícula</label><input id="inMat" type="text" autocomplete="off">
+    <div class="err" id="loginErr"></div>
+    <button class="btn primary" id="btnStart" style="width:100%;padding:10px;font-size:16px;margin-top:6px">Começar</button>
+  </div>
+</div>
+
 <header>
   <div class="logo">🛡️ Firewall <span>Mercado Bom Preço</span></div>
-  <div class="sub">painel de administração · firewall da matriz</div>
   <div class="sp"></div>
-  <input id="dupla" type="text" placeholder="Nomes da dupla">
-  <button id="btnReset" title="Volta tudo como estava no primeiro dia">Recomeçar</button>
+  <div class="who" id="who"></div>
+  <button id="btnReset" title="Volta as regras como estavam no primeiro dia">Recomeçar</button>
+  <button id="btnLogout" title="Trocar de aluno neste computador">Trocar aluno</button>
 </header>
 <nav id="nav">
   <button data-tab="painel" class="on">Painel</button>
-  <button data-tab="regras">Regras</button>
-  <button data-tab="trafego">Tráfego ao vivo</button>
-  <button data-tab="ids">IDS / IPS <span class="badge hide" id="idsBadge">0</span></button>
-  <button data-tab="vpn">VPN</button>
   <button data-tab="mapa">Mapa da rede</button>
+  <button data-tab="trafego">Tráfego ao vivo</button>
+  <button data-tab="regras">Regras</button>
+  <button data-tab="vpn">VPN</button>
+  <button data-tab="ids">IDS / IPS <span class="badge hide" id="idsBadge">0</span></button>
   <button data-tab="missoes">Missões <span class="badge hide" id="misBadge"></span></button>
   <button data-tab="relatorio">Relatório</button>
 </nav>
@@ -108,24 +127,22 @@ textarea{width:100%;min-height:260px;font-family:ui-monospace,Menlo,Consolas,mon
     <button class="btn" id="btnDiscard">Descartar</button>
   </div>
 
-  <!-- PAINEL -->
   <section id="tab-painel">
     <div class="cards" id="cards"></div>
     <div class="phone" id="phone"><b>📞 Telefone da TI</b><div id="phoneMsgs" class="muted">Ninguém ligou ainda.</div></div>
     <div class="panel">
-      <h2>Bem-vindos à equipe de TI</h2>
-      <p>O <b>Mercado Bom Preço</b> tem uma loja física, uma loja online e 30 funcionários. Vocês acabaram de assumir a TI. O técnico anterior foi embora e deixou o firewall com <b>uma única regra</b>, que libera tudo para todo mundo. Nos últimos dias, o servidor de arquivos sofreu milhares de tentativas de login, e alguém achou as câmeras da loja na internet.</p>
-      <p>O trabalho de vocês é proteger a empresa <b>sem parar o mercado</b>. Se bloquearem algo que os funcionários, os clientes ou a contadora precisam, o telefone toca.</p>
+      <h2>Bem-vindo à equipe de TI</h2>
+      <p>O <b>Mercado Bom Preço</b> tem uma loja física, uma loja online e 30 funcionários. Você acabou de assumir a TI. O técnico anterior foi embora e deixou o firewall com <b>uma única regra</b>, que libera tudo para todo mundo. Nos últimos dias, o servidor de arquivos sofreu milhares de tentativas de login, e alguém achou as câmeras da loja na internet.</p>
+      <p>O seu trabalho é proteger a empresa <b>sem parar o mercado</b>. Se você bloquear algo que os funcionários, os clientes, a contadora ou o suporte precisam, o telefone toca.</p>
       <div class="hint">💡 <b>Como o firewall decide.</b> Cada conexão é comparada com as regras <b>de cima para baixo</b>. A primeira regra que combinar decide se passa ou não, e as outras nem são lidas. Se nenhuma combinar, vale a <b>política padrão</b>, que fica no fim da lista. A resposta de uma conexão permitida volta sozinha (o firewall lembra da conversa, por isso se chama <i>stateful</i>), então não precisa de regra para a volta.</div>
-      <p class="muted">Comece pela aba <b>Mapa da rede</b> para conhecer a empresa, olhe o <b>Tráfego ao vivo</b> e depois vá para <b>Missões</b>.</p>
+      <p class="muted">Comece pela aba <b>Mapa da rede</b>, olhe o <b>Tráfego ao vivo</b> e depois siga a folha da atividade.</p>
     </div>
   </section>
 
-  <!-- REGRAS -->
   <section id="tab-regras" class="hide">
     <div class="panel">
       <h2>Regras do firewall</h2>
-      <p class="muted">Lidas de cima para baixo. A primeira que combinar decide. Use ↑ e ↓ para mudar a ordem.</p>
+      <p class="muted">Lidas de cima para baixo. A primeira que combinar decide. Use ↑ e ↓ para mudar a ordem, a caixinha "Ativa" para desligar uma regra sem apagar, e ✕ para apagar.</p>
       <table id="rulesTable">
         <thead><tr><th>#</th><th>Ativa</th><th>Ação</th><th>Origem</th><th>Destino</th><th>Serviço</th><th>Descrição</th><th>Acertos</th><th></th></tr></thead>
         <tbody></tbody>
@@ -137,11 +154,11 @@ textarea{width:100%;min-height:260px;font-family:ui-monospace,Menlo,Consolas,mon
       </select>
     </div>
     <div class="panel">
-      <h2 id="formTitle">Nova regra</h2>
+      <h2>Nova regra</h2>
       <div class="form">
         <div><label>Ação</label><select id="fAction"><option value="pass">✅ Permitir</option><option value="block">⛔ Bloquear</option></select></div>
-        <div><label>Origem (quem começa a conexão)</label><select id="fSrc"></select></div>
-        <div><label>Destino (para onde vai)</label><select id="fDst"></select></div>
+        <div><label>Origem (quem começa a conexão)</label><select id="fSrc"></select><input id="fSrcIp" type="text" class="hide" placeholder="digite o IP, ex. 185.220.1.2" style="margin-top:4px"></div>
+        <div><label>Destino (para onde vai)</label><select id="fDst"></select><input id="fDstIp" type="text" class="hide" placeholder="digite o IP" style="margin-top:4px"></div>
         <div><label>Serviço (porta)</label><select id="fSvc"></select></div>
         <div style="grid-column:span 2"><label>Descrição (por que esta regra existe)</label><input id="fDesc" type="text" placeholder="ex. clientes acessam a loja online"></div>
         <div><button class="btn primary" id="btnAdd" style="width:100%">Adicionar no fim</button></div>
@@ -151,7 +168,6 @@ textarea{width:100%;min-height:260px;font-family:ui-monospace,Menlo,Consolas,mon
     </div>
   </section>
 
-  <!-- TRAFEGO -->
   <section id="tab-trafego" class="hide">
     <div class="panel">
       <div class="toolbar">
@@ -159,14 +175,14 @@ textarea{width:100%;min-height:260px;font-family:ui-monospace,Menlo,Consolas,mon
         <button class="btn" id="btnPause">⏸ Pausar</button>
         <label class="switch"><input type="checkbox" id="onlyBlocked"> só bloqueados</label>
         <label class="switch"><input type="checkbox" id="onlyAtk"> só ataques</label>
+        <input type="text" id="ipFilter" placeholder="filtrar por IP ou porta" style="width:190px">
         <select id="speed"><option value="1">velocidade normal</option><option value="2">rápido</option><option value="0.5">devagar</option></select>
       </div>
       <div class="logwrap"><table class="log"><thead><tr><th>Hora</th><th>Ação</th><th>Origem</th><th>Destino</th><th>Porta</th><th>Regra</th><th>O que é</th></tr></thead><tbody id="logBody"></tbody></table></div>
-      <p class="muted">A coluna "O que é" não existe num firewall de verdade. Ela está aqui para vocês aprenderem a reconhecer cada tipo de tráfego. No mundo real, o administrador descobre isso pelo endereço e pela porta.</p>
+      <p class="muted">A coluna "O que é" não existe num firewall de verdade. Ela está aqui para você aprender a reconhecer cada tipo de tráfego. No mundo real, o administrador descobre isso pelo endereço e pela porta.</p>
     </div>
   </section>
 
-  <!-- IDS -->
   <section id="tab-ids" class="hide">
     <div class="grid2">
       <div class="panel">
@@ -175,11 +191,12 @@ textarea{width:100%;min-height:260px;font-family:ui-monospace,Menlo,Consolas,mon
         <label class="switch"><input type="checkbox" id="idsOn" checked> IDS ligado (gera alertas)</label><br><br>
         <label class="switch"><input type="checkbox" id="ipsOn"> Modo IPS (bloquear automaticamente o que bater com uma assinatura)</label>
         <div class="hint">💡 O firewall decide por endereço e porta. Um ataque que chega pela porta 443 da loja passa pelo firewall, porque a porta 443 precisa estar aberta para os clientes. Só quem olha o conteúdo consegue pegar.</div>
+        <div class="hint" style="background:#f4f4f4">🔐 <b>E o HTTPS, que é cifrado?</b> Neste mercado, o certificado da loja online foi instalado no firewall, que abre o HTTPS que chega para o site, inspeciona e cifra de novo. Sem isso, o IPS veria só dados embaralhados na porta 443, e quem protegeria a loja seria um WAF, o firewall de aplicação web, instalado junto do site.</div>
       </div>
       <div class="panel">
         <h2>Assinaturas</h2>
-        <p class="muted">Se uma assinatura estiver pegando tráfego legítimo (falso positivo), vocês podem silenciá-la.</p>
-        <table id="sigTable"><thead><tr><th>Assinatura</th><th>Alertas</th><th></th></tr></thead><tbody></tbody></table>
+        <p class="muted">Se uma assinatura estiver pegando tráfego legítimo (falso positivo), você pode <b>silenciá-la para todo mundo</b> ou criar uma <b>exceção</b> só para uma rede, que é o jeito mais seguro.</p>
+        <table id="sigTable"><thead><tr><th>Assinatura</th><th>Alertas</th><th>Silenciar</th><th>Exceção</th></tr></thead><tbody></tbody></table>
       </div>
     </div>
     <div class="panel">
@@ -188,128 +205,141 @@ textarea{width:100%;min-height:260px;font-family:ui-monospace,Menlo,Consolas,mon
     </div>
   </section>
 
-  <!-- VPN -->
   <section id="tab-vpn" class="hide">
     <div class="panel">
       <h2>VPN para home office (WireGuard)</h2>
-      <p>A <b>Carla</b>, contadora, trabalha de casa. Hoje ela entra no servidor de arquivos pela internet, com área de trabalho remota (RDP, porta 3389) aberta para o mundo. É por essa porta que chegam as tentativas de login.</p>
+      <p>A <b>Carla</b>, contadora, trabalha de casa. Hoje ela entra no servidor de arquivos pela internet, com a área de trabalho remota (RDP, porta 3389) aberta para o mundo. É por essa porta que chegam as tentativas de login.</p>
       <p>Com a VPN, o computador da Carla cria um <b>túnel cifrado</b> até o firewall. Do ponto de vista da rede, é como se ela estivesse dentro da empresa, na rede <code>VPN (home office)</code>. Assim, o RDP pode ser fechado para a internet.</p>
       <div id="vpnStatus"></div>
       <h3>Para a VPN funcionar</h3>
       <ol>
-        <li>O firewall precisa <b>aceitar o túnel</b> vindo da internet, com uma regra <i>Internet → Este firewall, VPN WireGuard (51820/UDP)</i>. Pode liberar só a casa da Carla, se quiser ser mais rígido.</li>
+        <li>O firewall precisa <b>aceitar o túnel</b> vindo da internet, com uma regra cujo destino é <i>Este firewall</i> e o serviço é <i>VPN WireGuard (51820/UDP)</i>. A origem pode ser só a casa da Carla, que é o mais seguro.</li>
         <li>Depois que o túnel sobe, o tráfego da Carla aparece com origem <code>VPN (home office)</code>. Crie as regras dizendo o que ela pode acessar por dentro do túnel.</li>
       </ol>
       <h3>Pares cadastrados</h3>
-      <table><thead><tr><th>Pessoa</th><th>Chave pública</th><th>IP no túnel</th><th>Último contato</th></tr></thead>
-      <tbody><tr><td>Carla (contadora)</td><td class="log">gY4c…Qe1k=</td><td class="log">10.8.0.2</td><td id="vpnLast">nunca</td></tr></tbody></table>
+      <table><thead><tr><th>Pessoa</th><th>Chave pública</th><th>IP de casa</th><th>IP no túnel</th><th>Último contato</th></tr></thead>
+      <tbody><tr><td>Carla (contadora)</td><td class="log">gY4c…Qe1k=</td><td class="ip" id="vpnHome"></td><td class="ip" id="vpnTun"></td><td id="vpnLast">nunca</td></tr></tbody></table>
     </div>
   </section>
 
-  <!-- MAPA -->
   <section id="tab-mapa" class="hide">
     <div class="panel">
-      <h2>Mapa da rede do mercado</h2>
+      <h2>Mapa da rede do mercado <span class="muted" style="font-weight:400">(endereços da sua matrícula)</span></h2>
       <div class="map" id="map"></div>
     </div>
   </section>
 
-  <!-- MISSOES -->
   <section id="tab-missoes" class="hide">
     <div class="panel">
       <div class="toolbar"><h2 style="margin:0">Missões</h2><span class="score" id="score"></span></div>
-      <p class="muted">As missões são conferidas o tempo todo, com as regras que estão <b>aplicadas</b>. Uma missão cumprida pode voltar a falhar se vocês mudarem uma regra depois.</p>
+      <p class="muted">As missões são conferidas o tempo todo, com as regras que estão <b>aplicadas</b>. Uma missão cumprida pode voltar a falhar se você mudar uma regra depois.</p>
       <div id="missions"></div>
     </div>
   </section>
 
-  <!-- RELATORIO -->
   <section id="tab-relatorio" class="hide">
     <div class="panel">
       <h2>Relatório para entregar</h2>
-      <p>Quando terminarem, copiem este relatório e colem no documento da dupla. Ele mostra as regras, as missões e o que aconteceu na rede.</p>
+      <p>Quando terminar, copie este relatório e cole no fim do seu documento. Ele mostra as suas regras, as missões, a linha do tempo do que você fez e um código de verificação que o professor confere.</p>
       <button class="btn primary" id="btnCopy">Copiar relatório</button> <span id="copyOk" class="muted"></span>
       <br><br><textarea id="report" readonly></textarea>
+    </div>
+  </section>
+
+  <section id="tab-verificar" class="hide">
+    <div class="panel">
+      <h2>Verificar relatório (professor)</h2>
+      <p class="muted">Cole o relatório inteiro do aluno, ou só a linha que começa com VERIFICAÇÃO.</p>
+      <textarea id="verIn" style="min-height:160px"></textarea><br><br>
+      <button class="btn primary" id="btnVer">Verificar</button>
+      <div id="verOut"></div>
     </div>
   </section>
 </main>
 
 <script>
 "use strict";
-// ---------- MODELO DA REDE ----------
-const ZONES = {
-  wan:{name:"Internet", net:"qualquer endereço fora da empresa"},
-  lan:{name:"Funcionários", net:"192.168.10.0/24"},
-  srv:{name:"Servidores", net:"192.168.20.0/24"},
-  dmz:{name:"DMZ (loja online)", net:"192.168.30.0/24"},
-  cam:{name:"Câmeras", net:"192.168.40.0/24"},
-  gst:{name:"Wi-Fi Visitantes", net:"192.168.50.0/24"},
-  vpn:{name:"VPN (home office)", net:"10.8.0.0/24"},
-  fw:{name:"Este firewall", net:"203.0.113.10 (IP público)"}
-};
-const HOSTS = {
-  site:{name:"Site da loja", zone:"dmz", ip:"192.168.30.10"},
-  arq:{name:"Servidor de arquivos", zone:"srv", ip:"192.168.20.5"},
-  erp:{name:"Sistema do caixa (ERP)", zone:"srv", ip:"192.168.20.6"},
-  nvr:{name:"Gravador das câmeras", zone:"cam", ip:"192.168.40.2"},
-  carla:{name:"Casa da Carla (contadora)", zone:"wan", ip:"189.45.12.7"}
-};
-// objetos que aparecem em origem e destino
-const OBJECTS = [
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// hash simples (cyrb53)
+function h53(str, seed=0){let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(let i=0;i<str.length;i++){const c=str.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0);}
+const SALT="ienh-gestao-fw-2026";
+const normMat = m => String(m||"").trim().toUpperCase().replace(/\s+/g,"");
+
+// ---------- IDENTIDADE E REDE PERSONALIZADA ----------
+let ID=null, P=null;
+function personal(mat){
+  const h=h53("rede:"+mat), g=k=>Math.floor(h/Math.pow(7,k))%1000;
+  const n=16+(h%200);                 // segundo octeto 10.n.x.y
+  const pub = 200 + (g(1)%40);
+  return {
+    n, lan:`10.${n}.10`, srv:`10.${n}.20`, dmz:`10.${n}.30`, cam:`10.${n}.40`, gst:`10.${n}.50`, vpn:`172.16.${n%250}`,
+    site:`10.${n}.30.${10+g(2)%40}`, arq:`10.${n}.20.${5+g(3)%20}`, erp:`10.${n}.20.${30+g(4)%20}`, nvr:`10.${n}.40.${2+g(5)%8}`,
+    fw:`203.0.113.${10+g(6)%200}`,
+    carla:`189.${20+g(7)%200}.${g(8)%250}.${2+g(9)%250}`,
+    crim:`185.220.${100+g(10)%100}.${2+g(11)%250}`,
+    sup:`${pub}.${g(12)%250}.${g(13)%250}.${2+g(14)%250}`
+  };
+}
+
+const ZONES = {wan:"Internet", lan:"Funcionários", srv:"Servidores", dmz:"DMZ (loja online)", cam:"Câmeras", gst:"Wi-Fi Visitantes", vpn:"VPN (home office)", fw:"Este firewall"};
+const HOSTZ = {site:"dmz", arq:"srv", erp:"srv", nvr:"cam", carla:"wan", sup:"wan", crim:"wan"};
+const OBJECTS = () => [
   {id:"any", label:"Qualquer"},
   {id:"z:wan", label:"Internet"},
-  {id:"z:lan", label:"Rede Funcionários"},
-  {id:"z:srv", label:"Rede Servidores"},
-  {id:"z:dmz", label:"Rede DMZ"},
-  {id:"z:cam", label:"Rede Câmeras"},
-  {id:"z:gst", label:"Rede Wi-Fi Visitantes"},
-  {id:"z:vpn", label:"VPN (home office)"},
-  {id:"z:fw", label:"Este firewall"},
-  {id:"h:site", label:"Site da loja (192.168.30.10)"},
-  {id:"h:arq", label:"Servidor de arquivos (192.168.20.5)"},
-  {id:"h:erp", label:"Sistema do caixa ERP (192.168.20.6)"},
-  {id:"h:nvr", label:"Gravador das câmeras (192.168.40.2)"},
-  {id:"h:carla", label:"Casa da Carla (189.45.12.7)"},
-  {id:"g:int", label:"Todas as redes internas"}
+  {id:"z:lan", label:`Rede Funcionários (${P.lan}.0/24)`},
+  {id:"z:srv", label:`Rede Servidores (${P.srv}.0/24)`},
+  {id:"z:dmz", label:`Rede DMZ (${P.dmz}.0/24)`},
+  {id:"z:cam", label:`Rede Câmeras (${P.cam}.0/24)`},
+  {id:"z:gst", label:`Rede Wi-Fi Visitantes (${P.gst}.0/24)`},
+  {id:"z:vpn", label:`VPN home office (${P.vpn}.0/24)`},
+  {id:"z:fw", label:`Este firewall (${P.fw})`},
+  {id:"h:site", label:`Site da loja (${P.site})`},
+  {id:"h:arq", label:`Servidor de arquivos (${P.arq})`},
+  {id:"h:erp", label:`Sistema do caixa ERP (${P.erp})`},
+  {id:"h:nvr", label:`Gravador das câmeras (${P.nvr})`},
+  {id:"h:carla", label:`Casa da Carla (${P.carla})`},
+  {id:"g:int", label:"Todas as redes internas"},
+  {id:"ip", label:"IP específico (digitar)..."}
 ];
 const SERVICES = [
-  {id:"any", label:"Qualquer porta", port:"*"},
-  {id:"web", label:"Web (HTTP 80 e HTTPS 443)", port:"80,443"},
-  {id:"https", label:"HTTPS (443)", port:"443"},
-  {id:"http", label:"HTTP (80)", port:"80"},
-  {id:"dns", label:"DNS (53)", port:"53"},
-  {id:"smb", label:"Pastas compartilhadas SMB (445)", port:"445"},
-  {id:"rdp", label:"Área de trabalho remota RDP (3389)", port:"3389"},
-  {id:"ssh", label:"SSH (22)", port:"22"},
-  {id:"rtsp", label:"Vídeo das câmeras RTSP (554)", port:"554"},
-  {id:"wg", label:"VPN WireGuard (51820/UDP)", port:"51820"},
-  {id:"telnet", label:"Telnet (23)", port:"23"}
+  {id:"any", label:"Qualquer porta"},
+  {id:"web", label:"Web (HTTP 80 e HTTPS 443)"},
+  {id:"https", label:"HTTPS (443)"},
+  {id:"http", label:"HTTP (80)"},
+  {id:"dns", label:"DNS (53)"},
+  {id:"smb", label:"Pastas compartilhadas SMB (445)"},
+  {id:"rdp", label:"Área de trabalho remota RDP (3389)"},
+  {id:"ssh", label:"SSH (22)"},
+  {id:"rtsp", label:"Vídeo das câmeras RTSP (554)"},
+  {id:"wg", label:"VPN WireGuard (51820/UDP)"},
+  {id:"telnet", label:"Telnet (23)"}
 ];
 const SVC_PORT = {web:[80,443],https:[443],http:[80],dns:[53],smb:[445],rdp:[3389],ssh:[22],rtsp:[554],wg:[51820],telnet:[23]};
 const INTERNAL = ["lan","srv","dmz","cam","gst","vpn"];
 
-function objMatches(objId, zone, host){
-  if(objId==="any") return true;
-  if(objId==="g:int") return INTERNAL.includes(zone);
-  if(objId.startsWith("z:")) return objId.slice(2)===zone;
-  if(objId.startsWith("h:")) return objId.slice(2)===host;
+function objMatches(o, zone, host, ip){
+  if(o==="any") return true;
+  if(o==="g:int") return INTERNAL.includes(zone);
+  if(o.startsWith("z:")) return o.slice(2)===zone;
+  if(o.startsWith("h:")) return o.slice(2)===host || (ip && P[o.slice(2)]===ip);
+  if(o.startsWith("ip:")) return o.slice(3)===ip;
   return false;
 }
-function svcMatches(svcId, port){ return svcId==="any" || (SVC_PORT[svcId]||[]).includes(port); }
-const objLabel = id => (OBJECTS.find(o=>o.id===id)||{label:id}).label;
+const svcMatches = (s, port) => s==="any" || (SVC_PORT[s]||[]).includes(port);
+function objLabel(id){ if(id.startsWith("ip:")) return "IP "+id.slice(3); const o=OBJECTS().find(x=>x.id===id); return o?o.label:id; }
 const svcLabel = id => (SERVICES.find(s=>s.id===id)||{label:id}).label;
 
-// ---------- TIPOS DE TRAFEGO ----------
+// ---------- TRAFEGO ----------
 const rnd = a => a[Math.floor(Math.random()*a.length)];
 const ri = (a,b) => a+Math.floor(Math.random()*(b-a+1));
-const extIp = () => rnd(["45.155","91.240","185.220","103.75","194.26","77.83","121.18","5.188","62.204","141.98"])+"."+ri(1,254)+"."+ri(1,254);
+const extIp = () => rnd(["45.155","91.240","103.75","194.26","77.83","121.18","5.188","62.204","141.98"])+"."+ri(1,254)+"."+ri(1,254);
 const custIp = () => rnd(["177.92","189.6","200.158","179.108","187.45","201.17","170.80"])+"."+ri(1,254)+"."+ri(1,254);
 const webIp = () => rnd(["142.250.79.","157.240.12.","13.107.42.","104.16.","23.55.1.","200.147.3."])+ri(1,254);
-const lanIp = () => "192.168.10."+ri(20,80);
-const gstIp = () => "192.168.50."+ri(10,200);
-const camIp = () => "192.168.40."+ri(11,26);
+const lanIp = () => P.lan+"."+ri(20,80);
+const gstIp = () => P.gst+"."+ri(10,200);
+const camIp = () => P.cam+"."+ri(11,26);
 
-// legit: true = trafego que a empresa precisa. phone = reclamacao se bloquear.
 const FLOWS = [
   {id:"lan_web", w:10, legit:true, src:"lan", dst:"wan", port:443, desc:"Funcionário navegando na internet", s:lanIp, d:webIp, phone:"Compras: a internet caiu aqui, não consigo fazer o pedido dos fornecedores!"},
   {id:"lan_dns", w:4, legit:true, src:"lan", dst:"wan", port:53, desc:"Computador perguntando o endereço de um site (DNS)", s:lanIp, d:()=>"8.8.8.8", phone:"RH: nenhum site abre, só aparece \"não foi possível encontrar o endereço\"."},
@@ -318,352 +348,408 @@ const FLOWS = [
   {id:"lan_cam", w:2, legit:true, src:"lan", dst:"cam", dhost:"nvr", port:554, desc:"Segurança assistindo às câmeras", s:lanIp, phone:"Segurança: as imagens das câmeras sumiram do monitor."},
   {id:"cli_https", w:9, legit:true, src:"wan", dst:"dmz", dhost:"site", port:443, desc:"Cliente comprando na loja online", s:custIp, phone:"Diretor: o site da loja está fora do ar! Estamos perdendo vendas!"},
   {id:"cli_http", w:2, legit:true, src:"wan", dst:"dmz", dhost:"site", port:80, desc:"Cliente digitou o site sem https (o site manda para o 443)", s:custIp, phone:"Marketing: quem digita o endereço sem https não chega na loja."},
-  {id:"site_erp", w:2, legit:true, src:"dmz", shost:"site", dst:"srv", dhost:"erp", port:443, desc:"Site da loja consultando o estoque no ERP", s:()=>"192.168.30.10", phone:"Loja online: o site mostra todos os produtos como \"sem estoque\"."},
+  {id:"site_erp", w:2, legit:true, src:"dmz", shost:"site", dst:"srv", dhost:"erp", port:443, desc:"Site da loja consultando o estoque no ERP", phone:"Loja online: o site mostra todos os produtos como \"sem estoque\"."},
   {id:"gst_web", w:5, legit:true, src:"gst", dst:"wan", port:443, desc:"Cliente no Wi-Fi do mercado navegando", s:gstIp, d:webIp, phone:"Atendimento: os clientes reclamam que o Wi-Fi do mercado não tem internet."},
   {id:"gst_dns", w:2, legit:true, src:"gst", dst:"wan", port:53, desc:"Celular de visitante perguntando um endereço (DNS)", s:gstIp, d:()=>"8.8.8.8", phone:"Atendimento: o Wi-Fi conecta, mas nenhum site abre no celular dos clientes."},
-  {id:"srv_upd", w:2, legit:true, src:"srv", dst:"wan", port:443, desc:"Servidor baixando atualizações de segurança", s:()=>"192.168.20."+rnd([5,6]), d:webIp, phone:"Aviso automático: o servidor não consegue baixar as atualizações de segurança há horas."},
-  {id:"vpn_hs", w:3, legit:true, src:"wan", shost:"carla", dst:"fw", port:51820, desc:"Carla tentando ligar a VPN de casa", s:()=>"189.45.12.7", d:()=>"203.0.113.10", vpnHandshake:true},
-  {id:"vpn_smb", w:4, legit:true, src:"vpn", dst:"srv", dhost:"arq", port:445, desc:"Carla, pela VPN, abrindo as pastas da contabilidade", s:()=>"10.8.0.2", needVpn:true, phone:"Carla: a VPN conectou, mas não consigo abrir as pastas da contabilidade."},
-  {id:"vpn_erp", w:2, legit:true, src:"vpn", dst:"srv", dhost:"erp", port:443, desc:"Carla, pela VPN, tirando relatório do ERP", s:()=>"10.8.0.2", needVpn:true, phone:"Carla: pela VPN eu não consigo abrir o ERP para fechar o mês."},
-  {id:"carla_rdp", w:3, legit:true, oldWay:true, src:"wan", shost:"carla", dst:"srv", dhost:"arq", port:3389, desc:"Carla entrando no servidor pelo RDP aberto (o jeito antigo)", s:()=>"189.45.12.7", noVpnOnly:true, phone:"Carla: não consigo mais entrar no servidor de casa! Como eu faço a folha de pagamento?"},
+  {id:"srv_upd", w:2, legit:true, src:"srv", dst:"wan", port:443, desc:"Servidor baixando atualizações de segurança", s:()=>rnd([P.arq,P.erp]), d:webIp, phone:"Aviso automático: o servidor não consegue baixar as atualizações de segurança há horas."},
+  {id:"vpn_hs", w:3, legit:true, src:"wan", shost:"carla", dst:"fw", port:51820, desc:"Carla tentando ligar a VPN de casa", vpnHandshake:true},
+  {id:"vpn_smb", w:4, legit:true, src:"vpn", dst:"srv", dhost:"arq", port:445, desc:"Carla, pela VPN, abrindo as pastas da contabilidade", s:()=>P.vpn+".2", needVpn:true, phone:"Carla: a VPN conectou, mas não consigo abrir as pastas da contabilidade."},
+  {id:"vpn_erp", w:2, legit:true, src:"vpn", dst:"srv", dhost:"erp", port:443, desc:"Carla, pela VPN, tirando relatório do ERP", s:()=>P.vpn+".2", needVpn:true, phone:"Carla: pela VPN eu não consigo abrir o ERP para fechar o mês."},
+  {id:"carla_rdp", w:3, legit:true, src:"wan", shost:"carla", dst:"srv", dhost:"arq", port:3389, desc:"Carla entrando no servidor pelo RDP aberto (o jeito antigo)", noVpnOnly:true, phone:"Carla: não consigo mais entrar no servidor de casa! Como eu faço a folha de pagamento?"},
+  {id:"sup_ssh", w:2, legit:true, src:"wan", shost:"sup", dst:"srv", dhost:"erp", port:22, desc:"Empresa de suporte do ERP fazendo a manutenção pelo SSH", phone:"Suporte do ERP: não conseguimos entrar no servidor do caixa para a manutenção agendada."},
   // ataques
   {id:"rdp_brute", w:7, src:"wan", dst:"srv", dhost:"arq", port:3389, desc:"Robô tentando senhas no RDP (força bruta)", s:extIp, sig:"rdp"},
-  {id:"scan", w:5, src:"wan", dst:"any", port:0, desc:"Varredura de portas procurando serviços abertos", s:extIp, sig:"scan"},
+  {id:"scan", w:4, src:"wan", dst:"any", port:0, desc:"Varredura de portas procurando serviços abertos", s:extIp, sig:"scan"},
   {id:"smb_wan", w:3, src:"wan", dst:"srv", dhost:"arq", port:445, desc:"Worm tentando a falha EternalBlue no SMB", s:extIp, sig:"smb"},
-  {id:"cam_wan", w:4, src:"wan", dst:"cam", dhost:"nvr", port:554, desc:"Alguém da internet assistindo às câmeras da loja", s:extIp, sig:"cam"},
-  {id:"ssh_site", w:3, src:"wan", dst:"dmz", dhost:"site", port:22, desc:"Robô tentando senhas no SSH do site", s:extIp, sig:"ssh"},
-  {id:"sqli", w:3, src:"wan", dst:"dmz", dhost:"site", port:443, desc:"Ataque de SQL injection contra a loja online", s:extIp, sig:"sqli"},
+  {id:"cam_wan", w:3, src:"wan", dst:"cam", dhost:"nvr", port:554, desc:"Alguém da internet assistindo às câmeras da loja", s:extIp, sig:"cam"},
+  {id:"ssh_site", w:2, src:"wan", dst:"dmz", dhost:"site", port:22, desc:"Robô tentando senhas no SSH do site", s:extIp, sig:"ssh"},
+  {id:"ssh_erp", w:3, src:"wan", dst:"srv", dhost:"erp", port:22, desc:"Robô tentando senhas no SSH do servidor do caixa", s:extIp, sig:"ssh"},
+  {id:"sqli", w:2, src:"wan", dst:"dmz", dhost:"site", port:443, desc:"Ataque de SQL injection contra a loja online", s:extIp, sig:"sqli"},
+  {id:"crim_sqli", w:3, src:"wan", shost:"crim", dst:"dmz", dhost:"site", port:443, desc:"O MESMO criminoso de sempre atacando a loja (SQL injection)", sig:"sqli"},
+  {id:"crim_http", w:2, src:"wan", shost:"crim", dst:"dmz", dhost:"site", port:80, desc:"O MESMO criminoso de sempre procurando páginas escondidas no site", sig:"scan"},
   {id:"gst_smb", w:3, src:"gst", dst:"srv", dhost:"arq", port:445, desc:"Celular infectado no Wi-Fi procurando pastas no servidor", s:gstIp, sig:"gstsmb"},
   {id:"gst_lan", w:2, src:"gst", dst:"lan", port:3389, desc:"Visitante tentando entrar nos computadores dos funcionários", s:gstIp, d:lanIp, sig:"gstlan"},
   {id:"cam_c2", w:3, src:"cam", dst:"wan", port:4444, desc:"Câmera infectada (botnet) falando com o servidor do criminoso", s:camIp, d:extIp, sig:"c2"},
-  {id:"dmz_smb", w:1, src:"dmz", shost:"site", dst:"srv", dhost:"arq", port:445, desc:"Site invadido tentando chegar no servidor de arquivos", s:()=>"192.168.30.10", sig:"pivot"}
+  {id:"dmz_smb", w:1, src:"dmz", shost:"site", dst:"srv", dhost:"arq", port:445, desc:"Site invadido tentando chegar no servidor de arquivos", sig:"pivot"}
 ];
 const SCAN_TARGETS = [
   {dst:"srv",dhost:"arq",port:22},{dst:"srv",dhost:"erp",port:23},{dst:"dmz",dhost:"site",port:3306},
   {dst:"cam",dhost:"nvr",port:80},{dst:"fw",port:443},{dst:"srv",dhost:"erp",port:5432},{dst:"lan",port:3389},{dst:"fw",port:22}
 ];
 const SIGS = {
-  rdp:{name:"ET SCAN muitas tentativas de login no RDP"},
-  scan:{name:"ET SCAN varredura de portas (Nmap)"},
-  smb:{name:"ET EXPLOIT tentativa de EternalBlue no SMB"},
-  cam:{name:"ET POLICY acesso externo a câmera IP"},
-  ssh:{name:"ET SCAN força bruta no SSH"},
-  sqli:{name:"ET WEB_SERVER tentativa de SQL injection"},
-  gstsmb:{name:"ET POLICY SMB vindo da rede de visitantes"},
-  gstlan:{name:"ET POLICY visitante tentando RDP interno"},
-  c2:{name:"ET MALWARE câmera falando com servidor de comando (botnet)"},
-  pivot:{name:"ET POLICY servidor da DMZ acessando SMB interno"},
-  exe:{name:"ET POLICY download de arquivo executável"}
+  rdp:"ET SCAN muitas tentativas de login no RDP",
+  scan:"ET SCAN varredura de portas e páginas",
+  smb:"ET EXPLOIT tentativa de EternalBlue no SMB",
+  cam:"ET POLICY acesso externo a câmera IP",
+  ssh:"ET SCAN força bruta no SSH",
+  sqli:"ET WEB_SERVER tentativa de SQL injection",
+  gstsmb:"ET POLICY SMB vindo da rede de visitantes",
+  gstlan:"ET POLICY visitante tentando RDP interno",
+  c2:"ET MALWARE câmera falando com servidor de comando (botnet)",
+  pivot:"ET POLICY servidor da DMZ acessando SMB interno",
+  exe:"ET POLICY download de arquivo executável"
 };
 
 // ---------- ESTADO ----------
 const DEFAULT_STATE = () => ({
   rules:[{on:true, action:"pass", src:"any", dst:"any", svc:"any", desc:"liberado temporário pra tudo funcionar - NÃO MEXER (2019)"}],
-  def:"pass", ips:false, ids:true, muted:[]
+  def:"pass", ips:false, ids:true, muted:[], exc:[]
 });
-let applied, draft, dirty=false;
-let hits = [], sigCount={}, logs=[], alerts=[], phoneMsgs=[], vpnLast=0;
-let stats = {legitOk:0, legitBlocked:0, atkBlocked:0, atkPassed:0, ipsBlocked:0};
-let recent = []; // {t, legit, blocked}
-let paused=false, speed=1;
+let applied, draft, dirty=false, timeline=[], startedAt=0;
+let hits=[], sigCount={}, logs=[], alerts=[], phoneMsgs=[], vpnLast=0;
+let stats={legitOk:0,legitBlocked:0,atkBlocked:0,atkPassed:0,ipsBlocked:0};
+let recent=[], paused=false, speed=1;
+const KEY = () => "fwsim2:"+ID.mat;
 
-function save(){ try{ localStorage.setItem("fwsim", JSON.stringify({applied, draft, dirty, dupla:document.getElementById("dupla").value})); }catch(e){} }
-function load(){
-  try{
-    const s = JSON.parse(localStorage.getItem("fwsim")||"null");
-    if(s && s.applied){ applied=s.applied; draft=s.draft||JSON.parse(JSON.stringify(s.applied)); dirty=!!s.dirty; document.getElementById("dupla").value=s.dupla||""; return; }
-  }catch(e){}
-  applied=DEFAULT_STATE(); draft=JSON.parse(JSON.stringify(applied)); dirty=false;
+function save(){ if(!ID) return; try{ localStorage.setItem(KEY(), JSON.stringify({applied,draft,dirty,timeline,startedAt,stats})); localStorage.setItem("fwsim2:last", JSON.stringify(ID)); }catch(e){} }
+function loadState(){
+  try{ const s=JSON.parse(localStorage.getItem(KEY())||"null");
+    if(s&&s.applied){ applied=s.applied; applied.exc=applied.exc||[]; applied.muted=applied.muted||[]; draft=s.draft||JSON.parse(JSON.stringify(applied)); dirty=!!s.dirty; timeline=s.timeline||[]; startedAt=s.startedAt||Date.now(); stats=s.stats||stats; return; } }catch(e){}
+  applied=DEFAULT_STATE(); draft=JSON.parse(JSON.stringify(applied)); dirty=false; timeline=[]; startedAt=Date.now();
+  mark("Começou a atividade");
 }
+function mark(what){ timeline.push({t:Date.now(), what, m:missionsMask(applied)}); if(timeline.length>200) timeline.shift(); }
 
 // ---------- DECISAO ----------
 function decide(st, f){
-  // f: {src, shost, dst, dhost, port}
   for(let i=0;i<st.rules.length;i++){
-    const r=st.rules[i];
-    if(!r.on) continue;
-    if(objMatches(r.src,f.src,f.shost) && objMatches(r.dst,f.dst,f.dhost) && svcMatches(r.svc,f.port))
-      return {action:r.action, rule:i};
+    const r=st.rules[i]; if(!r.on) continue;
+    if(objMatches(r.src,f.src,f.shost,f.sip) && objMatches(r.dst,f.dst,f.dhost,f.dip) && svcMatches(r.svc,f.port)) return {action:r.action, rule:i};
   }
   return {action:st.def, rule:-1};
 }
-function vpnUp(st){
-  return decide(st,{src:"wan",shost:"carla",dst:"fw",port:51820}).action==="pass";
+const vpnUp = st => decide(st,{src:"wan",shost:"carla",sip:P.carla,dst:"fw",dip:P.fw,port:51820}).action==="pass";
+function sigActive(st, sig, srcZone){
+  if(!st.ids || st.muted.includes(sig)) return false;
+  return !st.exc.some(e=>e.sig===sig && e.zone===srcZone);
 }
 
 // ---------- GERADOR ----------
 function pickFlow(){
-  const up = vpnUp(applied);
-  const pool = FLOWS.filter(f => !(f.needVpn && !up) && !(f.noVpnOnly && up));
-  const tot = pool.reduce((a,f)=>a+f.w,0);
-  let x=Math.random()*tot;
-  for(const f of pool){ x-=f.w; if(x<=0) return f; }
-  return pool[0];
+  const up=vpnUp(applied);
+  const pool=FLOWS.filter(f=>!(f.needVpn&&!up)&&!(f.noVpnOnly&&up));
+  let x=Math.random()*pool.reduce((a,f)=>a+f.w,0);
+  for(const f of pool){ x-=f.w; if(x<=0) return f; } return pool[0];
 }
 const now = () => new Date().toLocaleTimeString("pt-BR");
 function ipOf(zone, host){
-  if(host && HOSTS[host]) return HOSTS[host].ip;
+  if(host && P[host]) return P[host];
   if(zone==="lan") return lanIp(); if(zone==="gst") return gstIp(); if(zone==="cam") return camIp();
-  if(zone==="fw") return "203.0.113.10"; if(zone==="srv") return "192.168.20."+ri(5,6);
+  if(zone==="fw") return P.fw; if(zone==="srv") return rnd([P.arq,P.erp]); if(zone==="dmz") return P.site;
   return webIp();
 }
 function step(){
-  const F = pickFlow();
-  let ev = {src:F.src, shost:F.shost, dst:F.dst, dhost:F.dhost, port:F.port};
-  if(F.id==="scan"){ const t=rnd(SCAN_TARGETS); ev.dst=t.dst; ev.dhost=t.dhost; ev.port=t.port; }
+  const F=pickFlow();
+  const ev={src:F.src, shost:F.shost, dst:F.dst, dhost:F.dhost, port:F.port};
+  if(F.id==="scan"){ const t=rnd(SCAN_TARGETS); Object.assign(ev,{dst:t.dst,dhost:t.dhost,port:t.port}); }
   ev.sip = F.s ? F.s() : ipOf(ev.src, ev.shost);
   ev.dip = (F.d && F.id!=="scan") ? F.d() : ipOf(ev.dst, ev.dhost);
-  let sig = F.sig || null;
-  if(F.id==="srv_upd" && Math.random()<0.35) sig="exe"; // falso positivo
-  const d = decide(applied, ev);
-  let action=d.action, by = d.rule>=0 ? ("#"+(d.rule+1)) : "padrão";
+  let sig=F.sig||null;
+  if(F.id==="srv_upd" && Math.random()<0.4) sig="exe";
+  const d=decide(applied, ev);
+  let action=d.action, by=d.rule>=0?("#"+(d.rule+1)):"padrão";
   if(d.rule>=0) hits[d.rule]=(hits[d.rule]||0)+1;
   let ipsHit=false;
-  if(sig && applied.ids && !applied.muted.includes(sig)){
+  if(sig && sigActive(applied, sig, ev.src)){
     sigCount[sig]=(sigCount[sig]||0)+1;
     if(action==="pass" && applied.ips){ action="block"; by="IPS"; ipsHit=true; stats.ipsBlocked++; }
-    alerts.unshift({t:now(), sig, sip:ev.sip, dip:ev.dip+":"+ev.port, fw:d.action, ips:ipsHit});
-    if(alerts.length>150) alerts.pop();
+    alerts.unshift({t:now(), sig, sip:ev.sip, dip:ev.dip+":"+ev.port, fw:d.action, ips:ipsHit}); if(alerts.length>150) alerts.pop();
   }
-  const blocked = action==="block";
+  const blocked=action==="block";
   if(F.legit){ blocked?stats.legitBlocked++:stats.legitOk++; } else { blocked?stats.atkBlocked++:stats.atkPassed++; }
   if(F.vpnHandshake && !blocked) vpnLast=Date.now();
-  recent.push({t:Date.now(), legit:!!F.legit, blocked, id:F.id});
+  recent.push({t:Date.now(), legit:!!F.legit, blocked});
   if(F.legit && blocked && F.phone) ring(F.phone);
-  logs.unshift({t:now(), action, by, sip:ev.sip, dip:ev.dip, port:ev.port, desc:F.desc, atk:!F.legit, ips:ipHitText(ipsHit)});
-  if(logs.length>300) logs.pop();
+  logs.unshift({t:now(), action, by, sip:ev.sip, dip:ev.dip, port:ev.port, desc:F.desc, atk:!F.legit}); if(logs.length>400) logs.pop();
 }
-function ipHitText(x){return x}
 function ring(msg){
-  const last = phoneMsgs[0];
-  if(last && last.msg===msg && Date.now()-last.ts<15000) return;
-  phoneMsgs = phoneMsgs.filter(m=>m.msg!==msg);
-  phoneMsgs.unshift({msg, ts:Date.now(), t:now()});
-  if(phoneMsgs.length>5) phoneMsgs.pop();
+  const last=phoneMsgs[0]; if(last&&last.msg===msg&&Date.now()-last.ts<15000) return;
+  phoneMsgs=phoneMsgs.filter(m=>m.msg!==msg); phoneMsgs.unshift({msg,ts:Date.now(),t:now()}); if(phoneMsgs.length>5) phoneMsgs.pop();
 }
 
 // ---------- MISSOES ----------
-const T = (src,shost,dst,dhost,port) => ({src,shost,dst,dhost,port});
-const pass = (st,f) => decide(st,f).action==="pass";
-const LEGIT_TESTS = [
+const T=(src,shost,dst,dhost,port,sip)=>({src,shost,dst,dhost,port,sip:sip||(shost?P[shost]:undefined),dip:dhost?P[dhost]:undefined});
+const pass=(st,f)=>decide(st,f).action==="pass";
+const LEGIT_TESTS=()=>[
   ["Funcionários navegam", T("lan",null,"wan",null,443)],
   ["Funcionários usam DNS", T("lan",null,"wan",null,53)],
   ["Funcionários abrem as pastas", T("lan",null,"srv","arq",445)],
   ["Os caixas usam o ERP", T("lan",null,"srv","erp",443)],
   ["A segurança vê as câmeras", T("lan",null,"cam","nvr",554)],
-  ["Clientes compram no site (443)", T("wan",null,"dmz","site",443)],
-  ["Clientes chegam pelo http (80)", T("wan",null,"dmz","site",80)],
+  ["Clientes compram no site (443)", T("wan",null,"dmz","site",443,"177.92.10.20")],
+  ["Clientes chegam pelo http (80)", T("wan",null,"dmz","site",80,"177.92.10.20")],
   ["O site consulta o estoque no ERP", T("dmz","site","srv","erp",443)],
   ["Visitantes navegam", T("gst",null,"wan",null,443)],
   ["Visitantes usam DNS", T("gst",null,"wan",null,53)],
-  ["Servidores se atualizam", T("srv",null,"wan",null,443)]
+  ["Servidores se atualizam", T("srv","arq","wan",null,443)]
 ];
-function legitBroken(st){ return LEGIT_TESTS.filter(([n,f])=>!pass(st,f)).map(x=>x[0]); }
+const legitBroken = st => LEGIT_TESTS().filter(([n,f])=>!pass(st,f)).map(x=>x[0]);
 const MISSIONS = [
-  {t:"1. A loja online continua vendendo", d:"Clientes da internet precisam chegar no site da loja pelas portas 80 e 443. Isso vale para todas as outras missões também.",
-    ok:st=>pass(st,T("wan",null,"dmz","site",443)) && pass(st,T("wan",null,"dmz","site",80))},
-  {t:"2. Fechar o RDP para a internet", d:"Ninguém de fora pode chegar na porta 3389 do servidor de arquivos. Se a Carla reclamar, resolvam com a VPN (missão 6), e não abrindo uma exceção para sempre.",
-    ok:st=>!pass(st,T("wan",null,"srv","arq",3389))},
-  {t:"3. Visitante só navega", d:"O Wi-Fi dos clientes acessa a internet (web e DNS), mas não chega em nenhuma rede interna (servidores, funcionários, câmeras, DMZ).",
+  {t:"1. A loja online continua vendendo", d:"Clientes da internet chegam no site da loja pelas portas 80 e 443. Vale para todas as outras missões também.",
+    ok:st=>pass(st,T("wan",null,"dmz","site",443,"177.92.10.20")) && pass(st,T("wan",null,"dmz","site",80,"177.92.10.20"))},
+  {t:"2. Fechar o RDP para a internet", d:"Ninguém de fora chega na porta 3389 do servidor de arquivos. Se a Carla reclamar, resolva com a VPN (missão 6).",
+    ok:st=>!pass(st,T("wan",null,"srv","arq",3389,"45.155.1.1"))},
+  {t:"3. Visitante só navega", d:"O Wi-Fi dos clientes acessa a internet (web e DNS), mas não chega em nenhuma rede interna.",
     ok:st=>pass(st,T("gst",null,"wan",null,443)) && pass(st,T("gst",null,"wan",null,53)) && !pass(st,T("gst",null,"srv","arq",445)) && !pass(st,T("gst",null,"srv","erp",443)) && !pass(st,T("gst",null,"lan",null,3389)) && !pass(st,T("gst",null,"cam","nvr",554)) && !pass(st,T("gst",null,"dmz","site",22))},
   {t:"4. Câmeras longe da internet", d:"Ninguém de fora assiste às câmeras, e as câmeras não conversam com a internet (uma delas está infectada). A segurança continua vendo as imagens de dentro.",
-    ok:st=>!pass(st,T("wan",null,"cam","nvr",554)) && !pass(st,T("wan",null,"cam","nvr",80)) && !pass(st,T("cam",null,"wan",null,4444)) && !pass(st,T("cam",null,"wan",null,443)) && pass(st,T("lan",null,"cam","nvr",554))},
-  {t:"5. A DMZ não entra na casa", d:"Se o site for invadido, ele não pode chegar no servidor de arquivos. Ele só pode falar com o ERP na porta 443, para consultar o estoque. E o SSH do site não fica aberto para a internet.",
-    ok:st=>!pass(st,T("dmz","site","srv","arq",445)) && !pass(st,T("dmz","site","srv","arq",3389)) && pass(st,T("dmz","site","srv","erp",443)) && !pass(st,T("dmz","site","lan",null,445)) && !pass(st,T("wan",null,"dmz","site",22))},
+    ok:st=>!pass(st,T("wan",null,"cam","nvr",554,"45.155.1.1")) && !pass(st,T("wan",null,"cam","nvr",80,"45.155.1.1")) && !pass(st,T("cam",null,"wan",null,4444)) && !pass(st,T("cam",null,"wan",null,443)) && pass(st,T("lan",null,"cam","nvr",554))},
+  {t:"5. A DMZ não entra na casa", d:"Se o site for invadido, ele não chega no servidor de arquivos nem nos funcionários. Ele só fala com o ERP na porta 443, para o estoque. E o SSH do site não fica aberto para a internet.",
+    ok:st=>!pass(st,T("dmz","site","srv","arq",445)) && !pass(st,T("dmz","site","srv","arq",3389)) && pass(st,T("dmz","site","srv","erp",443)) && !pass(st,T("dmz","site","lan",null,445)) && !pass(st,T("wan",null,"dmz","site",22,"45.155.1.1"))},
   {t:"6. Home office pela VPN", d:"A Carla trabalha pela VPN (WireGuard, porta 51820), abre as pastas e o ERP por dentro do túnel, e o RDP fica fechado para todo mundo, inclusive para ela.",
     ok:st=>vpnUp(st) && pass(st,T("vpn",null,"srv","arq",445)) && pass(st,T("vpn",null,"srv","erp",443)) && !pass(st,T("wan","carla","srv","arq",3389))},
-  {t:"7. Bloquear tudo o que não foi permitido", d:"A política padrão vira \"bloquear\", e nada legítimo para de funcionar. É assim que as empresas sérias configuram um firewall.",
+  {t:"7. Bloquear tudo o que não foi permitido", d:"A política padrão vira \"bloquear\", a regra que libera tudo sai, e nada legítimo para de funcionar.",
     ok:st=>st.def==="block" && legitBroken(st).length===0 && !st.rules.some(r=>r.on&&r.action==="pass"&&r.src==="any"&&r.dst==="any"&&r.svc==="any")},
-  {t:"8. IPS sem atrapalhar", d:"Liguem o modo IPS para barrar o ataque de SQL injection que entra pela porta 443 da loja, mas sem impedir os servidores de baixarem atualizações (descubram qual assinatura está dando falso positivo).",
-    ok:st=>st.ids && st.ips && !st.muted.includes("sqli") && st.muted.includes("exe")}
+  {t:"8. IPS sem atrapalhar", d:"Ligue o IPS para barrar o SQL injection que entra pela porta 443 da loja, sem impedir os servidores de baixarem atualizações. Descubra a assinatura que dá falso positivo e crie uma EXCEÇÃO só para a rede de onde vem o tráfego legítimo, sem silenciar a assinatura para todo mundo.",
+    ok:st=>st.ids && st.ips && !st.muted.includes("sqli") && !st.muted.includes("exe") && st.exc.some(e=>e.sig==="exe"&&e.zone==="srv") && !st.exc.some(e=>e.sig==="sqli")},
+  {t:"9. Bloquear o criminoso de sempre", d:"Um mesmo endereço da internet ataca a loja o tempo todo. Descubra qual é no Tráfego ao vivo (ou nos alertas do IDS) e bloqueie esse IP para qualquer destino, sem tirar a loja do ar para os outros clientes.",
+    ok:st=>!pass(st,T("wan","crim","dmz","site",443)) && !pass(st,T("wan","crim","dmz","site",80)) && !pass(st,T("wan","crim","srv","erp",22)) && pass(st,T("wan",null,"dmz","site",443,"177.92.10.20"))},
+  {t:"10. Suporte só pelo endereço dele", d:"A empresa de suporte do ERP precisa do SSH (porta 22) no servidor do caixa. Descubra o IP dela no tráfego e libere só esse IP, só para o servidor do caixa e só na porta 22. Os robôs que tentam o SSH continuam bloqueados.",
+    ok:st=>pass(st,T("wan","sup","srv","erp",22)) && !pass(st,T("wan",null,"srv","erp",22,"45.155.1.1")) && !pass(st,T("wan","sup","srv","arq",445)) && !pass(st,T("wan","sup","srv","arq",3389)) && !pass(st,T("wan","sup","srv","erp",3389))}
 ];
+function missionsMask(st){ return MISSIONS.reduce((m,x,i)=>m|(x.ok(st)?1<<i:0),0); }
 
 // ---------- RENDER ----------
-const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function fillSelects(){
-  $("fSrc").innerHTML = OBJECTS.filter(o=>o.id!=="z:fw").map(o=>`<option value="${o.id}">${esc(o.label)}</option>`).join("");
-  $("fDst").innerHTML = OBJECTS.filter(o=>o.id!=="h:carla").map(o=>`<option value="${o.id}">${esc(o.label)}</option>`).join("");
-  $("fSvc").innerHTML = SERVICES.map(s=>`<option value="${s.id}">${esc(s.label)}</option>`).join("");
+  const O=OBJECTS();
+  $("fSrc").innerHTML=O.filter(o=>o.id!=="z:fw").map(o=>`<option value="${o.id}">${esc(o.label)}</option>`).join("");
+  $("fDst").innerHTML=O.filter(o=>o.id!=="h:carla").map(o=>`<option value="${o.id}">${esc(o.label)}</option>`).join("");
+  $("fSvc").innerHTML=SERVICES.map(s=>`<option value="${s.id}">${esc(s.label)}</option>`).join("");
 }
+$("fSrc").onchange=()=>$("fSrcIp").classList.toggle("hide",$("fSrc").value!=="ip");
+$("fDst").onchange=()=>$("fDstIp").classList.toggle("hide",$("fDst").value!=="ip");
 function renderRules(){
-  const tb = $("rulesTable").querySelector("tbody");
-  tb.innerHTML = draft.rules.map((r,i)=>`<tr class="${r.on?"":"off"}">
-    <td>${i+1}</td>
-    <td><input type="checkbox" data-a="on" data-i="${i}" ${r.on?"checked":""}></td>
+  $("rulesTable").querySelector("tbody").innerHTML = draft.rules.map((r,i)=>`<tr class="${r.on?"":"off"}">
+    <td>${i+1}</td><td><input type="checkbox" data-a="on" data-i="${i}" ${r.on?"checked":""}></td>
     <td><span class="pill ${r.action}">${r.action==="pass"?"PERMITIR":"BLOQUEAR"}</span></td>
     <td>${esc(objLabel(r.src))}</td><td>${esc(objLabel(r.dst))}</td><td>${esc(svcLabel(r.svc))}</td>
     <td>${esc(r.desc||"")}</td><td class="hits" data-h="${i}">${dirty?"–":(hits[i]||0)}</td>
     <td style="white-space:nowrap"><button class="btn sm" data-a="up" data-i="${i}" title="subir">↑</button> <button class="btn sm" data-a="down" data-i="${i}" title="descer">↓</button> <button class="btn sm danger" data-a="del" data-i="${i}" title="apagar">✕</button></td></tr>`).join("")
     + `<tr><td>–</td><td></td><td><span class="pill ${draft.def}">${draft.def==="pass"?"PERMITIR":"BLOQUEAR"}</span></td><td colspan="3"><i>Política padrão, quando nenhuma regra acima combinar</i></td><td></td><td></td><td></td></tr>`;
-  $("defPolicy").value = draft.def;
-  $("applyBar").classList.toggle("show", dirty);
+  $("defPolicy").value=draft.def;
+  $("applyBar").classList.toggle("show",dirty);
 }
 function markDirty(){ dirty=true; renderRules(); save(); }
-$("rulesTable").addEventListener("click", e=>{
+$("rulesTable").addEventListener("click",e=>{
   const b=e.target.closest("[data-a]"); if(!b) return;
   const i=+b.dataset.i, a=b.dataset.a, R=draft.rules;
-  if(a==="on"){ R[i].on=b.checked; }
-  else if(a==="up" && i>0){ [R[i-1],R[i]]=[R[i],R[i-1]]; }
-  else if(a==="down" && i<R.length-1){ [R[i+1],R[i]]=[R[i],R[i+1]]; }
-  else if(a==="del"){ R.splice(i,1); }
+  if(a==="on") R[i].on=b.checked;
+  else if(a==="up"&&i>0) [R[i-1],R[i]]=[R[i],R[i-1]];
+  else if(a==="down"&&i<R.length-1) [R[i+1],R[i]]=[R[i],R[i+1]];
+  else if(a==="del") R.splice(i,1);
   else return;
   markDirty();
 });
-$("defPolicy").onchange = e=>{ draft.def=e.target.value; markDirty(); };
+$("defPolicy").onchange=e=>{ draft.def=e.target.value; markDirty(); };
+const isIp = s => /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.test(s) && s.split(".").every(x=>+x<=255);
 function addRule(top){
-  const r={on:true, action:$("fAction").value, src:$("fSrc").value, dst:$("fDst").value, svc:$("fSvc").value, desc:$("fDesc").value.trim()};
-  if(!r.desc){ $("editHint").textContent="Escrevam uma descrição. Num firewall de empresa, regra sem explicação vira \"regra que ninguém tem coragem de apagar\"."; $("fDesc").focus(); return; }
-  if(r.src===r.dst && r.src!=="any"){ $("editHint").textContent="Origem e destino iguais. O tráfego dentro da mesma rede não passa pelo firewall, então essa regra nunca vai combinar."; }
-  else $("editHint").textContent="Regra adicionada. Lembrem de clicar em Aplicar alterações.";
+  let src=$("fSrc").value, dst=$("fDst").value;
+  if(src==="ip"){ const v=$("fSrcIp").value.trim(); if(!isIp(v)){ $("editHint").textContent="Digite um IP válido na origem, como 185.220.1.2."; return; } src="ip:"+v; }
+  if(dst==="ip"){ const v=$("fDstIp").value.trim(); if(!isIp(v)){ $("editHint").textContent="Digite um IP válido no destino."; return; } dst="ip:"+v; }
+  const r={on:true, action:$("fAction").value, src, dst, svc:$("fSvc").value, desc:$("fDesc").value.trim()};
+  if(!r.desc){ $("editHint").textContent="Escreva uma descrição. Num firewall de empresa, regra sem explicação vira \"regra que ninguém tem coragem de apagar\"."; $("fDesc").focus(); return; }
+  $("editHint").textContent = (r.src===r.dst && r.src!=="any") ? "Origem e destino iguais. O tráfego dentro da mesma rede não passa pelo firewall, então essa regra nunca vai combinar." : "Regra adicionada. Lembre de clicar em Aplicar alterações.";
   top ? draft.rules.unshift(r) : draft.rules.push(r);
-  $("fDesc").value="";
-  markDirty();
+  $("fDesc").value=""; markDirty();
 }
 $("btnAdd").onclick=()=>addRule(false);
 $("btnAddTop").onclick=()=>addRule(true);
-$("btnApply").onclick=()=>{ applied.rules=JSON.parse(JSON.stringify(draft.rules)); applied.def=draft.def; dirty=false; hits=[]; renderRules(); renderAll(); save(); };
+$("btnApply").onclick=()=>{ applied.rules=JSON.parse(JSON.stringify(draft.rules)); applied.def=draft.def; dirty=false; hits=[];
+  mark(`Aplicou ${applied.rules.length} regra(s), política ${applied.def==="pass"?"permitir":"bloquear"}`); renderRules(); renderAll(); save(); };
 $("btnDiscard").onclick=()=>{ draft.rules=JSON.parse(JSON.stringify(applied.rules)); draft.def=applied.def; dirty=false; renderRules(); save(); };
-$("idsOn").onchange=e=>{ applied.ids=draft.ids=e.target.checked; save(); renderAll(); };
-$("ipsOn").onchange=e=>{ applied.ips=draft.ips=e.target.checked; save(); renderAll(); };
-$("btnReset").onclick=()=>{ if(!confirmReset()) return; applied=DEFAULT_STATE(); draft=DEFAULT_STATE(); dirty=false; hits=[]; sigCount={}; logs=[]; alerts=[]; phoneMsgs=[]; recent=[]; vpnLast=0; stats={legitOk:0,legitBlocked:0,atkBlocked:0,atkPassed:0,ipsBlocked:0}; save(); renderRules(); renderAll(); };
+$("idsOn").onchange=e=>{ applied.ids=e.target.checked; mark("IDS "+(applied.ids?"ligado":"desligado")); save(); renderAll(true); };
+$("ipsOn").onchange=e=>{ applied.ips=e.target.checked; mark("IPS "+(applied.ips?"ligado":"desligado")); save(); renderAll(true); };
 let resetArm=0;
-function confirmReset(){ // sem confirm() do navegador: segundo clique em 4 s confirma
-  if(Date.now()-resetArm<4000){ resetArm=0; $("btnReset").textContent="Recomeçar"; return true; }
-  resetArm=Date.now(); $("btnReset").textContent="Clique de novo para apagar tudo";
-  setTimeout(()=>{ if(resetArm && Date.now()-resetArm>=4000){ $("btnReset").textContent="Recomeçar"; } },4100);
-  return false;
-}
-$("dupla").oninput=save;
+$("btnReset").onclick=()=>{
+  if(Date.now()-resetArm>4000){ resetArm=Date.now(); $("btnReset").textContent="Clique de novo para apagar as regras"; setTimeout(()=>{$("btnReset").textContent="Recomeçar";},4000); return; }
+  resetArm=0; $("btnReset").textContent="Recomeçar";
+  const tl=timeline; applied=DEFAULT_STATE(); draft=DEFAULT_STATE(); dirty=false; hits=[]; sigCount={}; logs=[]; alerts=[]; phoneMsgs=[]; recent=[]; vpnLast=0;
+  timeline=tl; mark("Recomeçou do zero"); save(); renderRules(); renderAll(true);
+};
+$("btnLogout").onclick=()=>{ try{localStorage.removeItem("fwsim2:last");}catch(e){} location.reload(); };
 
 function renderCards(){
-  const cut=Date.now()-30000;
-  recent = recent.filter(r=>r.t>cut);
-  const lb = recent.filter(r=>r.legit&&r.blocked).length;
-  const ap = recent.filter(r=>!r.legit&&!r.blocked).length;
-  const siteOk = pass(applied,T("wan",null,"dmz","site",443));
-  const caixa = pass(applied,T("lan",null,"srv","erp",443));
-  const up = vpnUp(applied);
-  const c = (cls,t,v)=>`<div class="card ${cls}"><div class="t">${t}</div><div class="v">${v}</div></div>`;
-  $("cards").innerHTML =
-    c(siteOk?"ok":"bad","Loja online", siteOk?"no ar":"FORA DO AR") +
-    c(caixa?"ok":"bad","Caixas da loja", caixa?"funcionando":"PARADOS") +
-    c(lb?"bad":"ok","Legítimo bloqueado (30 s)", lb) +
-    c(ap?"bad":"ok","Ataques que passaram (30 s)", ap) +
-    c(up?"ok":"warn","VPN da Carla", up?"conectada":"desligada") +
-    c("","Ataques barrados (total)", stats.atkBlocked);
+  const cut=Date.now()-30000; recent=recent.filter(r=>r.t>cut);
+  const lb=recent.filter(r=>r.legit&&r.blocked).length, ap=recent.filter(r=>!r.legit&&!r.blocked).length;
+  const siteOk=pass(applied,T("wan",null,"dmz","site",443,"177.92.10.20")), caixa=pass(applied,T("lan",null,"srv","erp",443)), up=vpnUp(applied);
+  const c=(cls,t,v)=>`<div class="card ${cls}"><div class="t">${t}</div><div class="v">${v}</div></div>`;
+  $("cards").innerHTML = c(siteOk?"ok":"bad","Loja online",siteOk?"no ar":"FORA DO AR") + c(caixa?"ok":"bad","Caixas da loja",caixa?"funcionando":"PARADOS")
+    + c(lb?"bad":"ok","Legítimo bloqueado (30 s)",lb) + c(ap?"bad":"ok","Ataques que passaram (30 s)",ap)
+    + c(up?"ok":"warn","VPN da Carla",up?"conectada":"desligada") + c("","Ataques barrados (total)",stats.atkBlocked);
   $("phoneMsgs").innerHTML = phoneMsgs.length ? phoneMsgs.map(m=>`<div class="msg">${m.t} · ${esc(m.msg)}</div>`).join("") : '<span class="muted">Ninguém ligou ainda.</span>';
 }
 function renderLog(){
-  const ob=$("onlyBlocked").checked, oa=$("onlyAtk").checked;
-  $("logBody").innerHTML = logs.filter(l=>(!ob||l.action==="block")&&(!oa||l.atk)).slice(0,150).map(l=>
+  const ob=$("onlyBlocked").checked, oa=$("onlyAtk").checked, f=$("ipFilter").value.trim();
+  $("logBody").innerHTML = logs.filter(l=>(!ob||l.action==="block")&&(!oa||l.atk)&&(!f||l.sip.includes(f)||l.dip.includes(f)||String(l.port)===f)).slice(0,160).map(l=>
     `<tr class="${l.atk?"atk":""}"><td>${l.t}</td><td><span class="pill ${l.by==="IPS"?"ips":l.action}">${l.by==="IPS"?"IPS":(l.action==="pass"?"PASSOU":"BLOQUEADO")}</span></td><td>${l.sip}</td><td>${l.dip}</td><td>${l.port}</td><td>${l.by}</td><td class="desc">${l.atk?"⚠️ ":""}${esc(l.desc)}</td></tr>`).join("");
 }
 function renderIds(){
   $("idsOn").checked=applied.ids; $("ipsOn").checked=applied.ips;
-  const n=alerts.length; $("idsBadge").textContent=n>99?"99+":n; $("idsBadge").classList.toggle("hide",!n||!applied.ids);
+  const zopts=["lan","srv","dmz","cam","gst","vpn","wan"].map(z=>`<option value="${z}">${ZONES[z]}</option>`).join("");
   $("sigTable").querySelector("tbody").innerHTML = Object.keys(SIGS).map(k=>{
-    const m=applied.muted.includes(k);
-    return `<tr class="${m?"off":""}"><td class="log">${esc(SIGS[k].name)}</td><td>${sigCount[k]||0}</td><td><button class="btn sm" data-sig="${k}">${m?"Reativar":"Silenciar"}</button></td></tr>`;}).join("");
-  $("alertBody").innerHTML = alerts.slice(0,100).map(a=>`<tr><td>${a.t}</td><td>${esc(SIGS[a.sig].name)}</td><td>${a.sip}</td><td>${a.dip}</td><td><span class="pill ${a.fw}">${a.fw==="pass"?"passou":"bloqueado"}</span></td><td>${a.ips?'<span class="pill ips">barrado</span>':"–"}</td></tr>`).join("");
+    const m=applied.muted.includes(k), ex=applied.exc.filter(e=>e.sig===k);
+    return `<tr class="${m?"off":""}"><td class="log">${esc(SIGS[k])}</td><td>${sigCount[k]||0}</td>
+      <td><button class="btn sm" data-mute="${k}">${m?"Reativar":"Silenciar"}</button></td>
+      <td>${ex.map(e=>`<span class="pill alert">não vale para ${ZONES[e.zone]} <a href="#" data-rmexc="${k}|${e.zone}">✕</a></span> `).join("")}
+        <select data-excsel="${k}"><option value="">exceção para...</option>${zopts}</select></td></tr>`;}).join("");
+  $("alertBody").innerHTML = alerts.slice(0,100).map(a=>`<tr><td>${a.t}</td><td>${esc(SIGS[a.sig])}</td><td>${a.sip}</td><td>${a.dip}</td><td><span class="pill ${a.fw}">${a.fw==="pass"?"passou":"bloqueado"}</span></td><td>${a.ips?'<span class="pill ips">barrado</span>':"–"}</td></tr>`).join("");
 }
 $("sigTable").addEventListener("click",e=>{
-  const b=e.target.closest("[data-sig]"); if(!b) return;
-  const k=b.dataset.sig, M=applied.muted;
-  const i=M.indexOf(k); i>=0?M.splice(i,1):M.push(k); draft.muted=M.slice(); save(); renderIds(); renderMissions();
+  const b=e.target.closest("[data-mute]"), r=e.target.closest("[data-rmexc]");
+  if(b){ const k=b.dataset.mute, M=applied.muted, i=M.indexOf(k); i>=0?M.splice(i,1):M.push(k); mark((i>=0?"Reativou":"Silenciou")+" a assinatura "+SIGS[k]); }
+  else if(r){ e.preventDefault(); const [k,z]=r.dataset.rmexc.split("|"); applied.exc=applied.exc.filter(x=>!(x.sig===k&&x.zone===z)); mark("Removeu exceção de "+SIGS[k]); }
+  else return;
+  save(); renderIds(); renderMissions();
+});
+$("sigTable").addEventListener("change",e=>{
+  const s=e.target.closest("[data-excsel]"); if(!s||!s.value) return;
+  const k=s.dataset.excsel; if(!applied.exc.some(x=>x.sig===k&&x.zone===s.value)) applied.exc.push({sig:k,zone:s.value});
+  mark(`Criou exceção de "${SIGS[k]}" para ${ZONES[s.value]}`); save(); renderIds(); renderMissions();
 });
 function renderVpn(){
   const up=vpnUp(applied);
-  $("vpnStatus").innerHTML = up ? '<div class="hint" style="background:var(--okbg)">🟢 <b>Túnel aceito.</b> O firewall libera o WireGuard vindo da internet. O tráfego da Carla agora chega pela rede <code>VPN (home office)</code>.</div>'
+  $("vpnStatus").innerHTML = up ? '<div class="hint" style="background:var(--okbg)">🟢 <b>Túnel aceito.</b> O firewall libera o WireGuard vindo da casa da Carla. O tráfego dela agora chega pela rede <code>VPN (home office)</code>.</div>'
     : '<div class="hint" style="background:var(--warnbg)">🟡 <b>Túnel recusado.</b> A Carla está tentando conectar, mas nenhuma regra permite a porta 51820 até <code>Este firewall</code>.</div>';
   $("vpnLast").textContent = vpnLast ? new Date(vpnLast).toLocaleTimeString("pt-BR") : "nunca";
+  $("vpnHome").textContent=P.carla; $("vpnTun").textContent=P.vpn+".2";
 }
 function renderMap(){
-  const z=(k,extra)=>`<div class="zone"><h4>${ZONES[k].name}</h4><div class="ip">${ZONES[k].net}</div>${extra||""}</div>`;
-  const ul=a=>"<ul>"+a.map(x=>`<li>${x}</li>`).join("")+"</ul>";
+  const z=(k,net,items)=>`<div class="zone"><h4>${ZONES[k]}</h4><div class="ip">${net}</div><ul>${items.map(x=>`<li>${x}</li>`).join("")}</ul></div>`;
+  const ip=x=>`<span class="ip">${x}</span>`;
   $("map").innerHTML =
-    z("wan", ul(["Clientes que compram no site","Robôs e criminosos do mundo todo","Casa da Carla, contadora <span class='ip'>189.45.12.7</span>"])) +
-    z("dmz", ul(["Site da loja <span class='ip'>192.168.30.10</span>, recebe clientes nas portas 80 e 443 e consulta o estoque no ERP"])) +
-    z("vpn", ul(["Carla, quando conecta pela VPN <span class='ip'>10.8.0.2</span>"])) +
-    z("lan", ul(["30 computadores e os caixas","Usam a internet, as pastas do servidor, o ERP e o vídeo das câmeras"])) +
-    `<div class="fwbox"><div class="big">🧱</div><b>Firewall</b><div class="ip" style="font-family:monospace">IP público 203.0.113.10</div><small>Toda conexão entre redes diferentes passa por aqui</small></div>` +
-    z("srv", ul(["Servidor de arquivos <span class='ip'>192.168.20.5</span>, pastas (445) e área de trabalho remota (3389)","Sistema do caixa, ERP <span class='ip'>192.168.20.6</span>, porta 443","Os dois baixam atualizações da internet"])) +
-    z("gst", ul(["Wi-Fi aberto para os clientes do mercado","Celulares desconhecidos, alguns infectados"])) +
-    z("cam", ul(["16 câmeras e o gravador <span class='ip'>192.168.40.2</span>","Vídeo pela porta 554"])) +
-    `<div class="zone"><h4>Serviços e portas</h4>${ul(SERVICES.filter(s=>s.id!=="any").map(s=>esc(s.label)))}</div>`;
+    z("wan","qualquer endereço fora da empresa",["Clientes que compram no site","Robôs e criminosos do mundo todo","Casa da Carla, contadora, "+ip(P.carla),"Empresa de suporte do ERP (descubra o IP no tráfego)"]) +
+    z("dmz",P.dmz+".0/24",["Site da loja "+ip(P.site)+", recebe clientes nas portas 80 e 443 e consulta o estoque no ERP"]) +
+    z("vpn",P.vpn+".0/24",["Carla, quando conecta pela VPN, "+ip(P.vpn+".2")]) +
+    z("lan",P.lan+".0/24",["30 computadores e os caixas","Usam a internet, as pastas, o ERP e o vídeo das câmeras"]) +
+    `<div class="fwbox"><div class="big">🧱</div><b>Firewall</b><div class="ip">IP público ${P.fw}</div><small>Toda conexão entre redes diferentes passa por aqui</small></div>` +
+    z("srv",P.srv+".0/24",["Servidor de arquivos "+ip(P.arq)+", pastas (445) e área de trabalho remota (3389)","Sistema do caixa, ERP "+ip(P.erp)+", porta 443, e SSH (22) para o suporte","Os dois baixam atualizações da internet"]) +
+    z("gst",P.gst+".0/24",["Wi-Fi aberto para os clientes do mercado","Celulares desconhecidos, alguns infectados"]) +
+    z("cam",P.cam+".0/24",["16 câmeras e o gravador "+ip(P.nvr),"Vídeo pela porta 554"]) +
+    `<div class="zone"><h4>Serviços e portas</h4><ul>${SERVICES.filter(s=>s.id!=="any").map(s=>`<li>${esc(s.label)}</li>`).join("")}</ul></div>`;
 }
 function renderMissions(){
-  const res=MISSIONS.map(m=>m.ok(applied));
-  const n=res.filter(Boolean).length;
+  const res=MISSIONS.map(m=>m.ok(applied)), n=res.filter(Boolean).length;
   $("score").textContent=`${n} de ${MISSIONS.length}`;
   $("misBadge").textContent=`${n}/${MISSIONS.length}`; $("misBadge").classList.remove("hide");
   $("misBadge").style.background = n===MISSIONS.length?"var(--ok)":"var(--accent)";
   const broken=legitBroken(applied);
   $("missions").innerHTML = res.map((ok,i)=>`<div class="mission ${ok?"done":""}"><div class="ic">${ok?"✅":"⬜"}</div><div><b>${esc(MISSIONS[i].t)}</b><span class="muted">${esc(MISSIONS[i].d)}</span></div></div>`).join("")
     + (broken.length?`<div class="hint" style="background:var(--badbg)">📞 Neste momento está quebrado: ${broken.map(esc).join(", ")}.</div>`:"");
+  const last=timeline[timeline.length-1], m=missionsMask(applied);
+  if(last && last.m!==m){ const done=MISSIONS.filter((x,i)=>(m&(1<<i))&&!(last.m&(1<<i))).map(x=>x.t.split(".")[0]); if(done.length) mark("Cumpriu a missão "+done.join(", ")); else last.m=m; save(); }
+}
+const fmt = t => new Date(t).toLocaleString("pt-BR");
+function verifLine(){
+  const m=missionsMask(applied);
+  const payload={n:ID.nome, r:ID.mat, m, k:applied.rules.length, d:applied.def, t0:startedAt, t1:Date.now(), a:timeline.filter(x=>x.what.startsWith("Aplicou")).length, b:stats.atkBlocked};
+  const b64=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  return "VERIFICAÇÃO "+b64+"."+h53(SALT+b64).toString(36);
 }
 function report(){
-  const L=[];
+  const L=[], m=missionsMask(applied);
   L.push("RELATÓRIO DO FIREWALL, MERCADO BOM PREÇO");
-  L.push("Dupla: "+($("dupla").value||"(sem nome)"));
-  L.push("Gerado em: "+new Date().toLocaleString("pt-BR"));
+  L.push(`Aluno ${ID.nome}, matrícula ${ID.mat}`);
+  L.push(`Gerado em ${fmt(Date.now())}. Começou em ${fmt(startedAt)}.`);
+  L.push("");
+  L.push("MINHA REDE");
+  L.push(`Funcionários ${P.lan}.0/24, Servidores ${P.srv}.0/24, DMZ ${P.dmz}.0/24, Câmeras ${P.cam}.0/24, Visitantes ${P.gst}.0/24, VPN ${P.vpn}.0/24`);
+  L.push(`Site ${P.site}, arquivos ${P.arq}, ERP ${P.erp}, gravador ${P.nvr}, firewall ${P.fw}, casa da Carla ${P.carla}`);
   L.push("");
   L.push("REGRAS APLICADAS (de cima para baixo)");
   applied.rules.forEach((r,i)=>L.push(`${i+1}. ${r.on?"":"[DESLIGADA] "}${r.action==="pass"?"PERMITIR":"BLOQUEAR"} | ${objLabel(r.src)} -> ${objLabel(r.dst)} | ${svcLabel(r.svc)} | ${r.desc||"(sem descrição)"}`));
-  L.push(`Política padrão: ${applied.def==="pass"?"PERMITIR":"BLOQUEAR"}`);
+  L.push(`Política padrão ${applied.def==="pass"?"PERMITIR":"BLOQUEAR"}`);
   if(dirty) L.push("Atenção, existem alterações que NÃO foram aplicadas.");
   L.push("");
-  L.push(`IDS ${applied.ids?"ligado":"desligado"}, IPS ${applied.ips?"ligado":"desligado"}. Assinaturas silenciadas: ${applied.muted.length?applied.muted.map(k=>SIGS[k].name).join("; "):"nenhuma"}`);
-  L.push(`VPN da Carla: ${vpnUp(applied)?"aceita":"recusada"}`);
+  L.push(`IDS ${applied.ids?"ligado":"desligado"}, IPS ${applied.ips?"ligado":"desligado"}.`);
+  L.push("Assinaturas silenciadas "+(applied.muted.length?applied.muted.map(k=>SIGS[k]).join("; "):"nenhuma"));
+  L.push("Exceções "+(applied.exc.length?applied.exc.map(e=>`${SIGS[e.sig]} não vale para ${ZONES[e.zone]}`).join("; "):"nenhuma"));
   L.push("");
-  L.push("MISSÕES");
-  MISSIONS.forEach(m=>L.push(`[${m.ok(applied)?"X":" "}] ${m.t}`));
+  L.push(`MISSÕES (${MISSIONS.filter((x,i)=>m&(1<<i)).length} de ${MISSIONS.length})`);
+  MISSIONS.forEach((x,i)=>L.push(`[${m&(1<<i)?"X":" "}] ${x.t}`));
   const broken=legitBroken(applied);
+  L.push("Legítimo quebrado agora "+(broken.length?broken.join(", "):"nada"));
+  L.push(`Totais ${stats.atkBlocked} ataques barrados, ${stats.atkPassed} ataques que passaram, ${stats.legitBlocked} conexões legítimas bloqueadas, ${stats.ipsBlocked} barradas pelo IPS.`);
   L.push("");
-  L.push("Legítimo quebrado agora: "+(broken.length?broken.join(", "):"nada"));
-  L.push(`Totais desde o começo: ${stats.atkBlocked} ataques barrados, ${stats.atkPassed} ataques que passaram, ${stats.legitBlocked} conexões legítimas bloqueadas, ${stats.ipsBlocked} barradas pelo IPS.`);
+  L.push("LINHA DO TEMPO");
+  timeline.forEach(x=>L.push(`${new Date(x.t).toLocaleTimeString("pt-BR")} ${x.what}`));
+  L.push("");
+  L.push(verifLine());
   return L.join("\n");
 }
-$("btnCopy").onclick=async()=>{ const t=report(); $("report").value=t; try{ await navigator.clipboard.writeText(t); $("copyOk").textContent="Copiado. Agora colem no documento da dupla."; }catch(e){ $("report").select(); $("copyOk").textContent="Selecionei o texto, usem Ctrl+C."; } };
+$("btnCopy").onclick=async()=>{ const t=report(); $("report").value=t; try{ await navigator.clipboard.writeText(t); $("copyOk").textContent="Copiado. Agora cole no fim do seu documento."; }catch(e){ $("report").select(); $("copyOk").textContent="Selecionei o texto, use Ctrl+C."; } };
+
+// verificador
+$("btnVer").onclick=()=>{
+  const mm=$("verIn").value.match(/VERIFICA[ÇC][ÃA]O\s+([A-Za-z0-9+/=]+)\.([a-z0-9]+)/);
+  if(!mm){ $("verOut").innerHTML='<p class="pill block">Linha de verificação não encontrada.</p>'; return; }
+  const ok=h53(SALT+mm[1]).toString(36)===mm[2];
+  let p; try{ p=JSON.parse(decodeURIComponent(escape(atob(mm[1])))); }catch(e){ $("verOut").innerHTML='<p class="pill block">Código corrompido.</p>'; return; }
+  const list=MISSIONS.map((x,i)=>`<li>${p.m&(1<<i)?"✅":"⬜"} ${esc(x.t)}</li>`).join("");
+  const mins=Math.round((p.t1-p.t0)/60000);
+  $("verOut").innerHTML=`<h3>${ok?'<span class="pill pass">CÓDIGO VÁLIDO</span>':'<span class="pill block">CÓDIGO ADULTERADO</span>'}</h3>
+   <table class="kv"><tr><td>Nome</td><td>${esc(p.n)}</td></tr><tr><td>Matrícula</td><td>${esc(p.r)}</td></tr>
+   <tr><td>Rede gerada para essa matrícula</td><td class="ip">${(()=>{const q=personal(normMat(p.r));return `site ${q.site}, criminoso ${q.crim}, suporte ${q.sup}`;})()}</td></tr>
+   <tr><td>Início e relatório</td><td>${fmt(p.t0)} até ${fmt(p.t1)} (${mins} min)</td></tr>
+   <tr><td>Vezes que aplicou regras</td><td>${p.a}</td></tr><tr><td>Regras e política</td><td>${p.k} regras, padrão ${p.d==="block"?"bloquear":"permitir"}</td></tr>
+   <tr><td>Ataques barrados</td><td>${p.b}</td></tr></table><ul>${list}</ul>
+   <p class="muted">Confira se o nome e a matrícula são do aluno que entregou, e se os IPs citados nas respostas dele batem com a rede gerada para essa matrícula.</p>`;
+};
 
 // abas
 let tab="painel";
-$("nav").addEventListener("click",e=>{
-  const b=e.target.closest("button[data-tab]"); if(!b) return;
-  tab=b.dataset.tab;
-  document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("on",x===b));
-  document.querySelectorAll("main > section").forEach(s=>s.classList.toggle("hide", s.id!=="tab-"+tab));
+function showTab(t){
+  tab=t; document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("on",x.dataset.tab===t));
+  document.querySelectorAll("main > section").forEach(s=>s.classList.toggle("hide", s.id!=="tab-"+t));
   renderAll(true);
-});
+}
+$("nav").addEventListener("click",e=>{ const b=e.target.closest("button[data-tab]"); if(b) showTab(b.dataset.tab); });
 $("btnPause").onclick=()=>{ paused=!paused; $("btnPause").textContent=paused?"▶ Continuar":"⏸ Pausar"; };
 $("speed").onchange=e=>{ speed=+e.target.value; };
-$("onlyBlocked").onchange=renderLog; $("onlyAtk").onchange=renderLog;
+["onlyBlocked","onlyAtk"].forEach(id=>$(id).onchange=renderLog); $("ipFilter").oninput=renderLog;
 
 function renderAll(force){
+  if(!ID) return;
   renderCards();
-  if(tab==="trafego" && (!paused||force)) renderLog();
-  if(tab==="ids") renderIds(); else { const n=alerts.length; $("idsBadge").textContent=n>99?"99+":n; $("idsBadge").classList.toggle("hide",!n||!applied.ids); }
+  if(tab==="trafego"&&(!paused||force)) renderLog();
+  if(tab==="ids"&&force) renderIds();
+  if(tab==="ids"&&!force) $("alertBody").innerHTML = alerts.slice(0,100).map(a=>`<tr><td>${a.t}</td><td>${esc(SIGS[a.sig])}</td><td>${a.sip}</td><td>${a.dip}</td><td><span class="pill ${a.fw}">${a.fw==="pass"?"passou":"bloqueado"}</span></td><td>${a.ips?'<span class="pill ips">barrado</span>':"–"}</td></tr>`).join("");
+  const n=alerts.length; $("idsBadge").textContent=n>99?"99+":n; $("idsBadge").classList.toggle("hide",!n||!applied.ids);
   if(tab==="vpn") renderVpn();
-  if(tab==="mapa" && force) renderMap();
-  if(tab==="regras" && force) renderRules();
-  if(tab==="regras" && !dirty) document.querySelectorAll("td.hits").forEach(td=>{ td.textContent=hits[+td.dataset.h]||0; });
+  if(tab==="mapa"&&force) renderMap();
+  if(tab==="regras"&&force) renderRules();
+  if(tab==="regras"&&!dirty) document.querySelectorAll("td.hits").forEach(td=>{ td.textContent=hits[+td.dataset.h]||0; });
   if(tab==="relatorio") $("report").value=report();
   renderMissions();
 }
 
+// login
+function start(nome, mat){
+  ID={nome, mat}; P=personal(mat);
+  $("who").innerHTML=`👤 <b>${esc(nome)}</b> · matrícula <b>${esc(mat)}</b>`;
+  $("login").classList.add("hide");
+  loadState(); fillSelects(); renderRules(); renderMap(); save(); renderAll(true);
+}
+$("btnStart").onclick=()=>{
+  const nome=$("inNome").value.trim().replace(/\s+/g," "), mat=normMat($("inMat").value);
+  if(nome.split(" ").length<2){ $("loginErr").textContent="Digite o nome completo (nome e sobrenome)."; return; }
+  if(!/^[A-Z0-9.\-]{3,20}$/.test(mat)){ $("loginErr").textContent="Digite a matrícula (só números e letras)."; return; }
+  start(nome, mat);
+};
+$("inMat").addEventListener("keydown",e=>{ if(e.key==="Enter") $("btnStart").click(); });
+
 // laco
 let acc=0, lastT=performance.now();
-function loop(t){
-  const dt=(t-lastT)/1000; lastT=t;
-  if(!paused){
-    acc += dt*2.2*speed;
-    let n=0; while(acc>=1 && n<20){ step(); acc-=1; n++; }
-    if(acc>5) acc=0;
-  }
-  requestAnimationFrame(loop);
+function loop(t){ const dt=(t-lastT)/1000; lastT=t;
+  if(ID && !paused){ acc+=dt*2.2*speed; let n=0; while(acc>=1&&n<20){ step(); acc-=1; n++; } if(acc>5) acc=0; }
+  requestAnimationFrame(loop); }
+
+if(new URLSearchParams(location.search).has("verificar")){
+  $("login").classList.add("hide"); $("nav").classList.add("hide"); document.querySelector("header .who").textContent="Modo professor";
+  $("btnReset").classList.add("hide"); $("btnLogout").classList.add("hide"); showTabVer();
+} else {
+  try{ const last=JSON.parse(localStorage.getItem("fwsim2:last")||"null"); if(last&&last.mat){ $("inNome").value=last.nome; $("inMat").value=last.mat; } }catch(e){}
 }
-load(); fillSelects(); renderRules(); renderMap(); renderAll(true);
-setInterval(()=>renderAll(false), 700);
+function showTabVer(){ document.querySelectorAll("main > section").forEach(s=>s.classList.toggle("hide", s.id!=="tab-verificar")); }
+setInterval(()=>renderAll(false),700);
 requestAnimationFrame(loop);
 </script>
 </body>
