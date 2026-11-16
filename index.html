@@ -243,6 +243,9 @@ textarea{width:100%;min-height:300px;font-family:ui-monospace,Menlo,Consolas,mon
       <p>Quando terminar, clique em <b>Baixar arquivo de entrega</b>. O navegador salva um arquivo com a extensão <code>.fwm</code> (Firewall do Mercado), normalmente na pasta <b>Downloads</b>. Esse arquivo vai anexado na tarefa do Classroom, junto do seu documento. Ele guarda as suas regras, as missões, a linha do tempo do que você fez e um código de verificação que o professor confere.</p>
       <p class="muted">Não abra nem edite o arquivo. Qualquer mudança nele aparece para o professor como arquivo adulterado. Se continuar mexendo no simulador depois de baixar, baixe de novo e entregue o mais novo.</p>
       <button class="btn primary" id="btnDownload">⬇ Baixar arquivo de entrega (.fwm)</button> <span id="dlOk" class="muted"></span>
+      <h3>Continuar de um arquivo</h3>
+      <p>Trocou de computador ou o navegador apagou o seu trabalho? Entre com o <b>mesmo nome e a mesma matrícula</b> e carregue o último arquivo <code>.fwm</code> que você baixou. As regras, as missões e a linha do tempo voltam como estavam. Só é aceito arquivo com nome e matrícula idênticos aos que estão no alto da tela.</p>
+      <input type="file" id="loadFile" accept=".fwm,.txt"> <div id="loadOut"></div>
       <h3>Conteúdo do arquivo</h3>
       <br><br><textarea id="report" readonly></textarea>
     </div>
@@ -400,16 +403,16 @@ const DEFAULT_STATE = () => ({
   rules:[{on:true, action:"pass", src:"any", dst:"any", svc:"any", desc:"liberado temporário pra tudo funcionar - NÃO MEXER (2019)"}],
   def:"pass", ips:false, ids:true, muted:[], exc:[]
 });
-let applied, draft, dirty=false, timeline=[], startedAt=0;
+let applied, draft, dirty=false, timeline=[], startedAt=0, loads=0;
 let hits=[], sigCount={}, logs=[], alerts=[], phoneMsgs=[], vpnLast=0;
 let stats={legitOk:0,legitBlocked:0,atkBlocked:0,atkPassed:0,ipsBlocked:0};
 let recent=[], paused=false, speed=1;
 const KEY = () => "fwsim2:"+ID.mat;
 
-function save(){ if(!ID) return; try{ localStorage.setItem(KEY(), JSON.stringify({applied,draft,dirty,timeline,startedAt,stats})); localStorage.setItem("fwsim2:last", JSON.stringify(ID)); }catch(e){} }
+function save(){ if(!ID) return; try{ localStorage.setItem(KEY(), JSON.stringify({applied,draft,dirty,timeline,startedAt,stats,loads})); localStorage.setItem("fwsim2:last", JSON.stringify(ID)); }catch(e){} }
 function loadState(){
   try{ const s=JSON.parse(localStorage.getItem(KEY())||"null");
-    if(s&&s.applied){ applied=s.applied; applied.exc=applied.exc||[]; applied.muted=applied.muted||[]; draft=s.draft||JSON.parse(JSON.stringify(applied)); dirty=!!s.dirty; timeline=s.timeline||[]; startedAt=s.startedAt||Date.now(); stats=s.stats||stats; return; } }catch(e){}
+    if(s&&s.applied){ applied=s.applied; applied.exc=applied.exc||[]; applied.muted=applied.muted||[]; draft=s.draft||JSON.parse(JSON.stringify(applied)); dirty=!!s.dirty; timeline=s.timeline||[]; startedAt=s.startedAt||Date.now(); stats=s.stats||stats; loads=s.loads||0; return; } }catch(e){}
   applied=DEFAULT_STATE(); draft=JSON.parse(JSON.stringify(applied)); dirty=false; timeline=[]; startedAt=Date.now();
   mark("Começou a atividade");
 }
@@ -645,7 +648,7 @@ function renderMissions(){
 const fmt = t => new Date(t).toLocaleString("pt-BR");
 function verifLine(){
   const m=missionsMask(applied);
-  const payload={n:ID.nome, r:ID.mat, m, k:applied.rules.length, d:applied.def, t0:startedAt, t1:Date.now(), a:timeline.filter(x=>x.what.startsWith("Aplicou")).length, b:stats.atkBlocked};
+  const payload={n:ID.nome, r:ID.mat, m, k:applied.rules.length, d:applied.def, t0:startedAt, t1:Date.now(), a:timeline.filter(x=>x.what.startsWith("Aplicou")).length, b:stats.atkBlocked, c:loads};
   const b64=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
   return "VERIFICAÇÃO "+b64+"."+h53(SALT+b64).toString(36);
 }
@@ -677,9 +680,46 @@ function report(){
   L.push("LINHA DO TEMPO");
   timeline.forEach(x=>L.push(`${new Date(x.t).toLocaleTimeString("pt-BR")} ${x.what}`));
   L.push("");
+  L.push("DADOS PARA CONTINUAR (não edite)");
+  L.push(stateLine());
+  L.push("");
   L.push(verifLine());
   return L.join("\n");
 }
+const b64e = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const b64d = b => JSON.parse(decodeURIComponent(escape(atob(b))));
+function stateLine(){
+  const b64=b64e({n:ID.nome, r:ID.mat, applied, timeline, startedAt, stats, loads, t:Date.now()});
+  return "ESTADO "+b64+"."+h53(SALT+"estado"+b64).toString(36);
+}
+function parseState(raw){
+  const pos=raw.search(/^ESTADO /m); if(pos<0) return {err:"Este arquivo não tem os dados para continuar. Baixe o arquivo de novo pelo simulador."};
+  const mm=raw.slice(pos+7).replace(/\s+/g,"").match(/^([A-Za-z0-9+/=]+)\.([a-z0-9]+)/);
+  if(!mm || h53(SALT+"estado"+mm[1]).toString(36)!==mm[2]) return {err:"Arquivo alterado ou corrompido. Não foi carregado."};
+  try{ const s=b64d(mm[1]); if(!s.applied||!s.applied.rules) throw 0; return {s}; }catch(e){ return {err:"Arquivo corrompido. Não foi carregado."}; }
+}
+let pendingLoad=null;
+$("loadFile").onchange=async e=>{
+  const f=e.target.files[0]; e.target.value=""; pendingLoad=null; if(!f) return;
+  const r=parseState(await f.text()), out=$("loadOut");
+  if(r.err){ out.innerHTML=`<p class="hint" style="background:var(--badbg)">⛔ ${esc(r.err)}</p>`; return; }
+  const s=r.s;
+  if(s.n!==ID.nome || normMat(s.r)!==ID.mat){
+    out.innerHTML=`<p class="hint" style="background:var(--badbg)">⛔ Bloqueado. Este arquivo é de <b>${esc(s.n)}</b>, matrícula <b>${esc(s.r)}</b>, e quem está no simulador é <b>${esc(ID.nome)}</b>, matrícula <b>${esc(ID.mat)}</b>. Só é possível carregar um arquivo com nome e matrícula idênticos. Se o arquivo é seu, clique em Trocar aluno e entre exatamente como entrou da primeira vez.</p>`; return; }
+  pendingLoad=s;
+  const n=MISSIONS.filter(x=>x.ok(s.applied)).length;
+  out.innerHTML=`<p class="hint">Arquivo gerado em ${fmt(s.t)}, com ${s.applied.rules.length} regras e ${n} de ${MISSIONS.length} missões. Carregar <b>substitui</b> o que está no simulador agora.</p><button class="btn primary" id="btnLoadOk">Carregar este arquivo</button> <button class="btn" id="btnLoadNo">Cancelar</button>`;
+  $("btnLoadNo").onclick=()=>{ pendingLoad=null; out.innerHTML=""; };
+  $("btnLoadOk").onclick=()=>{
+    const s=pendingLoad; if(!s) return; pendingLoad=null;
+    applied=s.applied; applied.exc=applied.exc||[]; applied.muted=applied.muted||[];
+    draft=JSON.parse(JSON.stringify(applied)); dirty=false; hits=[]; sigCount={}; logs=[]; alerts=[]; recent=[];
+    timeline=s.timeline||[]; startedAt=s.startedAt||Date.now(); stats=Object.assign(stats,s.stats||{}); loads=(s.loads||0)+1;
+    mark("Carregou o arquivo gerado em "+fmt(s.t)); save();
+    fillSelects(); renderRules(); renderMap(); renderAll(true);
+    out.innerHTML=`<p class="hint">✅ Arquivo carregado. As regras voltaram como estavam.</p>`;
+  };
+};
 const slug = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"").toLowerCase();
 $("btnDownload").onclick=()=>{
   mark("Baixou o arquivo de entrega"); save();
@@ -710,6 +750,7 @@ $("verFiles").onchange=async e=>{
      if(!r.file.toLowerCase().includes(slug(p.r))) av.push("nome do arquivo não bate com a matrícula do código");
      if(mins<15) av.push("feito em menos de 15 min");
      if(p.a<3) av.push("aplicou regras poucas vezes");
+     if(p.c) av.push(`continuou de arquivo ${p.c}x`);
      return `<tr><td class="log">${esc(r.file)}</td><td>${r.ok?'<span class="pill pass">válido</span>':'<span class="pill block">ADULTERADO</span>'}</td><td>${esc(p.n)}</td><td>${esc(p.r)}</td><td>${n}/${MISSIONS.length}</td><td>${fmt(p.t0)}</td><td>${mins}</td><td>${p.a}</td><td>${av.map(esc).join("; ")}</td></tr>`; }).join("")+`</tbody></table></div>`;
 };
 $("btnVer").onclick=()=>{
@@ -723,7 +764,7 @@ $("btnVer").onclick=()=>{
    <tr><td>Rede gerada para essa matrícula</td><td class="ip">${(()=>{const q=personal(normMat(p.r));return `site ${q.site}, criminoso ${q.crim}, suporte ${q.sup}`;})()}</td></tr>
    <tr><td>Início e relatório</td><td>${fmt(p.t0)} até ${fmt(p.t1)} (${mins} min)</td></tr>
    <tr><td>Vezes que aplicou regras</td><td>${p.a}</td></tr><tr><td>Regras e política</td><td>${p.k} regras, padrão ${p.d==="block"?"bloquear":"permitir"}</td></tr>
-   <tr><td>Ataques barrados</td><td>${p.b}</td></tr></table><ul>${list}</ul>
+   <tr><td>Ataques barrados</td><td>${p.b}</td></tr><tr><td>Continuou de arquivo</td><td>${p.c?p.c+" vez(es), veja a linha do tempo":"não"}</td></tr></table><ul>${list}</ul>
    <p class="muted">Confira se o nome e a matrícula são do aluno que entregou, e se os IPs citados nas respostas dele batem com a rede gerada para essa matrícula.</p>`;
 };
 
