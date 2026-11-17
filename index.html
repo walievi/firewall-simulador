@@ -725,8 +725,8 @@ async function handleLoadFile(f){
   const s=r.s;
   if(s.n!==ID.nome || normMat(s.r)!==ID.mat){
     loadMsg("bad","⛔",`<b>Bloqueado, o arquivo não é de quem está no simulador.</b>${fn}
-      <div class="facts"><span>No arquivo: <b>${esc(s.n)}</b>, matrícula <b>${esc(s.r)}</b></span><span>No simulador: <b>${esc(ID.nome)}</b>, matrícula <b>${esc(ID.mat)}</b></span></div>
-      <span class="muted">Nome e matrícula precisam ser idênticos, letra por letra. Se o arquivo é seu, clique em <b>Trocar aluno</b> e entre exatamente como entrou da primeira vez.</span>`); return; }
+      <div class="facts"><span>No simulador: <b>${esc(ID.nome)}</b>, matrícula <b>${esc(ID.mat)}</b></span></div>
+      <span class="muted">O arquivo precisa ter exatamente esse nome e essa matrícula, letra por letra. Se o arquivo é seu, clique em <b>Trocar aluno</b> e entre exatamente como entrou da primeira vez.</span>`); return; }
   pendingLoad=s;
   const n=MISSIONS.filter(x=>x.ok(s.applied)).length;
   loadMsg("ask","📄",`<b>Arquivo de ${esc(s.n)}, pronto para carregar.</b>${fn}
