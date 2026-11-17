@@ -80,6 +80,19 @@ select,input[type=text]{padding:6px 7px;border:1px solid var(--line);border-radi
 .hint{background:var(--bluebg);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13.5px}
 .hide{display:none!important}
 code{background:#f1f3f6;padding:1px 5px;border-radius:4px}
+.drop{display:flex;align-items:center;gap:14px;border:2px dashed #9fb3c8;border-radius:12px;padding:16px 18px;background:#f7fafd;cursor:pointer;transition:background .15s,border-color .15s}
+.drop:hover,.drop:focus-visible{border-color:var(--blue);background:var(--bluebg);outline:none}
+.drop.over{border-color:var(--blue);border-style:solid;background:var(--bluebg)}
+.drop .ico{font-size:30px;line-height:1}
+.drop b{display:block;font-size:15px}
+.drop .muted{font-size:13px}
+.lres{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px;display:flex;gap:12px;align-items:flex-start}
+.lres .ico{font-size:22px;line-height:1.2}
+.lres.ok{background:var(--okbg);border-color:#9fd8b1} .lres.bad{background:var(--badbg);border-color:#f0b4b0} .lres.ask{background:#fff}
+.lres .fn{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--muted);word-break:break-all}
+.lres .facts{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.lres .facts span{background:#f2f5f9;border:1px solid var(--line);border-radius:8px;padding:4px 9px;font-size:13px}
+.lres .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 textarea{width:100%;min-height:300px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:10px}
 .score{font-size:28px;font-weight:800}
 #login{position:fixed;inset:0;background:rgba(20,28,38,.92);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
@@ -245,9 +258,12 @@ textarea{width:100%;min-height:300px;font-family:ui-monospace,Menlo,Consolas,mon
       <button class="btn primary" id="btnDownload">⬇ Baixar arquivo de entrega (.fwm)</button> <span id="dlOk" class="muted"></span>
       <h3>Continuar de um arquivo</h3>
       <p>Trocou de computador ou o navegador apagou o seu trabalho? Entre com o <b>mesmo nome e a mesma matrícula</b> e carregue o último arquivo <code>.fwm</code> que você baixou. As regras, as missões e a linha do tempo voltam como estavam. Só é aceito arquivo com nome e matrícula idênticos aos que estão no alto da tela.</p>
-      <input type="file" id="loadFile" accept=".fwm,.txt"> <div id="loadOut"></div>
-      <h3>Conteúdo do arquivo</h3>
-      <br><br><textarea id="report" readonly></textarea>
+      <label class="drop" id="loadDrop" tabindex="0">
+        <input type="file" id="loadFile" accept=".fwm,.txt" hidden>
+        <span class="ico">📂</span>
+        <span><b>Arraste o arquivo .fwm para cá ou clique para escolher</b><span class="muted" id="loadWho"></span></span>
+      </label>
+      <div id="loadOut"></div>
     </div>
   </section>
 
@@ -699,17 +715,25 @@ function parseState(raw){
   try{ const s=b64d(mm[1]); if(!s.applied||!s.applied.rules) throw 0; return {s}; }catch(e){ return {err:"Arquivo corrompido. Não foi carregado."}; }
 }
 let pendingLoad=null;
-$("loadFile").onchange=async e=>{
-  const f=e.target.files[0]; e.target.value=""; pendingLoad=null; if(!f) return;
-  const r=parseState(await f.text()), out=$("loadOut");
-  if(r.err){ out.innerHTML=`<p class="hint" style="background:var(--badbg)">⛔ ${esc(r.err)}</p>`; return; }
+function loadMsg(kind, ico, html){ $("loadOut").innerHTML=`<div class="lres ${kind}"><span class="ico">${ico}</span><div style="flex:1">${html}</div></div>`; }
+async function handleLoadFile(f){
+  pendingLoad=null; if(!f) return;
+  const fn=`<div class="fn">${esc(f.name)}</div>`;
+  if(f.size>2e6){ loadMsg("bad","⛔",`<b>Este não é um arquivo do simulador.</b>${fn}`); return; }
+  const r=parseState(await f.text());
+  if(r.err){ loadMsg("bad","⛔",`<b>Não foi possível carregar.</b> ${esc(r.err)}${fn}`); return; }
   const s=r.s;
   if(s.n!==ID.nome || normMat(s.r)!==ID.mat){
-    out.innerHTML=`<p class="hint" style="background:var(--badbg)">⛔ Bloqueado. Este arquivo é de <b>${esc(s.n)}</b>, matrícula <b>${esc(s.r)}</b>, e quem está no simulador é <b>${esc(ID.nome)}</b>, matrícula <b>${esc(ID.mat)}</b>. Só é possível carregar um arquivo com nome e matrícula idênticos. Se o arquivo é seu, clique em Trocar aluno e entre exatamente como entrou da primeira vez.</p>`; return; }
+    loadMsg("bad","⛔",`<b>Bloqueado, o arquivo não é de quem está no simulador.</b>${fn}
+      <div class="facts"><span>No arquivo: <b>${esc(s.n)}</b>, matrícula <b>${esc(s.r)}</b></span><span>No simulador: <b>${esc(ID.nome)}</b>, matrícula <b>${esc(ID.mat)}</b></span></div>
+      <span class="muted">Nome e matrícula precisam ser idênticos, letra por letra. Se o arquivo é seu, clique em <b>Trocar aluno</b> e entre exatamente como entrou da primeira vez.</span>`); return; }
   pendingLoad=s;
   const n=MISSIONS.filter(x=>x.ok(s.applied)).length;
-  out.innerHTML=`<p class="hint">Arquivo gerado em ${fmt(s.t)}, com ${s.applied.rules.length} regras e ${n} de ${MISSIONS.length} missões. Carregar <b>substitui</b> o que está no simulador agora.</p><button class="btn primary" id="btnLoadOk">Carregar este arquivo</button> <button class="btn" id="btnLoadNo">Cancelar</button>`;
-  $("btnLoadNo").onclick=()=>{ pendingLoad=null; out.innerHTML=""; };
+  loadMsg("ask","📄",`<b>Arquivo de ${esc(s.n)}, pronto para carregar.</b>${fn}
+    <div class="facts"><span>Gerado em ${fmt(s.t)}</span><span>${s.applied.rules.length} regras</span><span>${n} de ${MISSIONS.length} missões</span><span>Política padrão ${s.applied.def==="block"?"bloquear":"permitir"}</span></div>
+    <span class="muted">Carregar <b>substitui</b> o que está no simulador agora.</span>
+    <div class="acts"><button class="btn primary" id="btnLoadOk">Carregar este arquivo</button><button class="btn" id="btnLoadNo">Cancelar</button></div>`);
+  $("btnLoadNo").onclick=()=>{ pendingLoad=null; $("loadOut").innerHTML=""; };
   $("btnLoadOk").onclick=()=>{
     const s=pendingLoad; if(!s) return; pendingLoad=null;
     applied=s.applied; applied.exc=applied.exc||[]; applied.muted=applied.muted||[];
@@ -717,13 +741,19 @@ $("loadFile").onchange=async e=>{
     timeline=s.timeline||[]; startedAt=s.startedAt||Date.now(); stats=Object.assign(stats,s.stats||{}); loads=(s.loads||0)+1;
     mark("Carregou o arquivo gerado em "+fmt(s.t)); save();
     fillSelects(); renderRules(); renderMap(); renderAll(true);
-    out.innerHTML=`<p class="hint">✅ Arquivo carregado. As regras voltaram como estavam.</p>`;
+    loadMsg("ok","✅",`<b>Arquivo carregado.</b> As regras, as missões e a linha do tempo voltaram como estavam em ${fmt(s.t)}.`);
   };
-};
+}
+$("loadFile").onchange=e=>{ const f=e.target.files[0]; e.target.value=""; handleLoadFile(f); };
+const drop=$("loadDrop");
+drop.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); $("loadFile").click(); } });
+["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop",e=>{ const f=e.dataTransfer.files[0]; if(f) handleLoadFile(f); });
 const slug = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"").toLowerCase();
 $("btnDownload").onclick=()=>{
   mark("Baixou o arquivo de entrega"); save();
-  const t=report(); $("report").value=t;
+  const t=report();
   const name=`firewall-${slug(ID.mat)}-${slug(ID.nome)}.fwm`;
   const blob=new Blob([t.replace(/\n/g,"\r\n")],{type:"text/plain;charset=utf-8"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
@@ -791,13 +821,13 @@ function renderAll(force){
   if(tab==="mapa"&&force) renderMap();
   if(tab==="regras"&&force) renderRules();
   if(tab==="regras"&&!dirty) document.querySelectorAll("td.hits").forEach(td=>{ td.textContent=hits[+td.dataset.h]||0; });
-  if(tab==="relatorio") $("report").value=report();
   renderMissions();
 }
 
 // login
 function start(nome, mat){
   ID={nome, mat}; P=personal(mat);
+  $("loadWho").textContent=` Só aceita arquivo de ${nome}, matrícula ${mat}.`;
   $("who").innerHTML=`👤 <b>${esc(nome)}</b> · matrícula <b>${esc(mat)}</b>`;
   $("login").classList.add("hide");
   loadState(); fillSelects(); renderRules(); renderMap(); save(); renderAll(true);
